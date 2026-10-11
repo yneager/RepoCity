@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from repocity.config import SZZConfig
+from repocity.store.db import Store
 from repocity.szz.bugfix import BugfixClassifier
 from repocity.szz.szz import commit_sizes, is_noise_line, parse_deleted_lines, szz_links
-from repocity.store.db import Store
 
 
 def _links(store_path, cfg):

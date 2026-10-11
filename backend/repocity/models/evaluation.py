@@ -10,6 +10,14 @@
   buggy files largest first): ``Popt = 1 - (A_opt - A_model) / (A_opt - A_worst)``.
 * **Precision@k**: of the k top-ranked files, how many were actually fixed.
 
+Effort-aware metrics are reported for two orderings of the same scores:
+
+* *by risk* - files in decreasing score order (what a classifier naturally outputs);
+* *by risk/LOC* (suffix ``_ea``) - files in decreasing ``score / LOC`` order, i.e. expected
+  bugs per line read. This is the standard way to make a risk model effort-aware
+  (Mende & Koschke, CSMR 2010; Kamei et al., TSE 2013): ranking by raw risk puts big
+  files first and spends the LOC budget quickly.
+
 Ties in a score are broken by a fixed pseudo-random order (seeded), identical for
 every method, so that coarse baselines (e.g. FixCache's in/out-of-cache) are not
 accidentally advantaged by file order.
@@ -22,7 +30,7 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 
 from repocity.config import SEED
 
-METRICS = ["roc_auc", "pr_auc", "recall_20loc", "popt", "p_at_10", "p_at_20"]
+METRICS = ["roc_auc", "pr_auc", "recall_20loc", "popt", "p_at_10", "p_at_20", "recall_20loc_ea", "popt_ea"]
 METRIC_LABELS = {
     "roc_auc": "ROC-AUC",
     "pr_auc": "PR-AUC",
@@ -30,6 +38,8 @@ METRIC_LABELS = {
     "popt": "Popt",
     "p_at_10": "Precision@10",
     "p_at_20": "Precision@20",
+    "recall_20loc_ea": "Recall@20%LOC (risk/LOC)",
+    "popt_ea": "Popt (risk/LOC)",
 }
 
 
@@ -79,6 +89,7 @@ def evaluate_ranking(y, scores, loc, seed: int = SEED) -> dict[str, float]:
     scores = np.asarray(scores, dtype=float)
     loc = np.asarray(loc, dtype=float)
     order = rank_order(scores, seed)
+    order_ea = rank_order(scores / np.maximum(loc, 1.0), seed)
     both = 0 < y.sum() < len(y)
     return {
         "roc_auc": float(roc_auc_score(y, scores)) if both else float("nan"),
@@ -87,4 +98,6 @@ def evaluate_ranking(y, scores, loc, seed: int = SEED) -> dict[str, float]:
         "popt": popt(y, loc, order),
         "p_at_10": precision_at_k(y, order, 10),
         "p_at_20": precision_at_k(y, order, 20),
+        "recall_20loc_ea": recall_at_effort(y, loc, order_ea, 0.2),
+        "popt_ea": popt(y, loc, order_ea),
     }

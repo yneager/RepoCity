@@ -80,7 +80,16 @@ class RepoData:
         snapshots: pd.DataFrame,
         snapshot_files: pd.DataFrame,
         links: pd.DataFrame,
+        max_fix_commit_files: int | None = 50,
     ) -> RepoData:
+        """``max_fix_commit_files``: bug-fix commits touching more files (any type) are not
+        counted as bug fixes anywhere downstream (labels, features, FixCache, visualisation).
+        The keyword heuristic's raw flag is kept in ``commits.is_bugfix_raw``."""
+        commits = commits.copy()
+        if "is_bugfix_raw" not in commits:
+            commits["is_bugfix_raw"] = commits["is_bugfix"]
+        if max_fix_commit_files is not None:
+            commits["is_bugfix"] = commits["is_bugfix_raw"] & (commits["n_files_all"] <= max_fix_commit_files)
         c = commits.set_index("idx")
         ch = changes.join(c[["time", "author", "is_bugfix", "n_files"]], on="commit_idx")
         ch["churn"] = ch["added"] + ch["deleted"]

@@ -78,6 +78,9 @@ class SZZConfig:
 @dataclass(frozen=True)
 class ModelConfig:
     horizon_months: int = 6  # label window (T, T + horizon]
+    # bug-fix commits touching more files than this are treated as non-fixes for labels and
+    # features (mass "fix" commits are reformatting / tooling / migrations, not bug fixes)
+    max_fix_commit_files: int = 50
     train_windows: int = 3  # number of past windows (T-6m, T-12m, ...) used for training
     min_history_months: int = 6  # a training cutoff needs at least this much history before it
     app_cutoff_step_months: int = 3  # spacing of risk predictions shown in the app

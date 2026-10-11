@@ -103,7 +103,8 @@ function ScoreCardView({ prediction, k, onHide }: { prediction: Prediction; k: n
     { label: `Hits@${card.k}`, a: `${card.hits}`, b: `${card.hotspotHits}`, better: card.hits - card.hotspotHits, testid: 'hits' },
     { label: `Precision@${card.k}`, a: pct(card.precision), b: pct(card.hotspotPrecision), better: card.precision - card.hotspotPrecision, testid: 'precision' },
     { label: 'Recall@20%LOC', a: pct(model?.recall_20loc), b: pct(hot?.recall_20loc), better: (model?.recall_20loc ?? 0) - (hot?.recall_20loc ?? 0), testid: 'recall' },
-    { label: 'Popt', a: num(model?.popt), b: num(hot?.popt), better: (model?.popt ?? 0) - (hot?.popt ?? 0), testid: 'popt' },
+    { label: 'Recall@20%LOC, risk/LOC', a: pct(model?.recall_20loc_ea), b: pct(hot?.recall_20loc_ea), better: (model?.recall_20loc_ea ?? 0) - (hot?.recall_20loc_ea ?? 0), testid: 'recall-ea' },
+    { label: 'Popt, risk/LOC', a: num(model?.popt_ea), b: num(hot?.popt_ea), better: (model?.popt_ea ?? 0) - (hot?.popt_ea ?? 0), testid: 'popt-ea' },
     { label: 'ROC-AUC', a: num(model?.roc_auc), b: num(hot?.roc_auc), better: (model?.roc_auc ?? 0) - (hot?.roc_auc ?? 0), testid: 'auc' },
   ]
   return (
@@ -134,7 +135,8 @@ function ScoreCardView({ prediction, k, onHide }: { prediction: Prediction; k: n
         </tbody>
       </table>
       <p className="mt-2 text-[10.5px] leading-snug text-slate-500">
-        Recall@20%LOC: share of fixed files found when reading the top-ranked files up to 20% of all code. Same numbers as the backend evaluation (E1).
+        Recall@20%LOC: share of fixed files found when reading top-ranked files until 20% of all code is read; "risk/LOC" ranks by
+        risk per line instead. Same numbers as the backend evaluation (E1).
       </p>
     </div>
   )

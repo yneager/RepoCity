@@ -97,14 +97,15 @@ def ingest(
     return t.seconds
 
 
-def load_repo_data(store: Store, szz_cfg: SZZConfig | None = None) -> RepoData:
-    """Load a store into memory and apply one SZZ variant."""
+def load_repo_data(store: Store, szz_cfg: SZZConfig | None = None, max_fix_commit_files: int | None = 50) -> RepoData:
+    """Load a store into memory and apply one SZZ variant and the large-fix filter."""
     szz_cfg = szz_cfg or SZZConfig()
     commits = store.read("commits")
     sizes = store.read("intro_sizes")
     links = szz_links(store.read("szz_lines"), commits, dict(zip(sizes["hash"], sizes["n_files"])), szz_cfg)
     return RepoData.build(
-        commits, store.read("changes"), store.read("files"), store.read("snapshots"), store.read("snapshot_files"), links
+        commits, store.read("changes"), store.read("files"), store.read("snapshots"), store.read("snapshot_files"), links,
+        max_fix_commit_files,
     )
 
 
@@ -115,4 +116,4 @@ def available_szz_config(store: Store) -> SZZConfig:
 
 def make_predictor(store: Store, cfg: AnalysisConfig | None = None) -> Predictor:
     cfg = cfg or AnalysisConfig()
-    return Predictor(load_repo_data(store, available_szz_config(store)), cfg.model)
+    return Predictor(load_repo_data(store, available_szz_config(store), cfg.model.max_fix_commit_files), cfg.model)

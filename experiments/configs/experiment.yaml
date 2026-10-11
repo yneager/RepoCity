@@ -1,0 +1,16 @@
+# Settings shared by all experiments (mirrors repocity.config.ModelConfig defaults).
+seed: 42
+horizon_months: 6          # label = bug fix in (T, T + 6 months]
+eval_cutoff_step_months: 6 # E1 cutoffs every 6 months ...
+eval_cutoff_count: 6       # ... 6 of them = the last 3 years with complete labels
+train_windows: 3           # train on T-6m, T-12m, T-18m
+szz_large_commit_files: 50
+# bug-fix commits touching more files are not counted as fixes for labels/features
+max_fix_commit_files: 50
+# Demo cities exported to demo/cache (one per language).
+demo_repos: [flask, express, jsoup]
+# Building counts for the frontend FPS benchmark (E7).
+fps_building_counts: [1000, 2500, 5000, 10000, 20000]
+# Repositories whose commits are sampled for the manual bug-fix spot-check (E6).
+spotcheck_repos: [flask, commons-lang]
+spotcheck_per_repo: 50

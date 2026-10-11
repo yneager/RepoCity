@@ -1,6 +1,7 @@
-import { CameraControls } from '@react-three/drei'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { useEffect, useMemo, useRef } from 'react'
+import { CameraControls, PerformanceMonitor } from '@react-three/drei'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import * as THREE from 'three'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Layout, Meta, Snapshot } from '../api'
 import { scoreCard } from '../data/transforms'
 import { useCity } from '../store'
@@ -17,7 +18,17 @@ interface Props {
 
 declare global {
   interface Window {
-    __repocity?: { fps: number[]; frames: number; ready: boolean; buildings: number }
+    __repocity?: {
+      fps: number[]
+      frames: number
+      ready: boolean
+      buildings: number
+      updateMs: number[]
+      /** screen position (CSS px) of building i's roof centre - used by the e2e tests */
+      screenOf?: (i: number) => { x: number; y: number; visible: boolean }
+      /** index of the tallest visible building */
+      tallest?: () => number
+    }
   }
 }
 
@@ -25,7 +36,7 @@ declare global {
 function FpsMeter({ buildings }: { buildings: number }) {
   const acc = useRef({ frames: 0, t: performance.now() })
   useEffect(() => {
-    window.__repocity = { fps: [], frames: 0, ready: true, buildings }
+    window.__repocity = { fps: [], frames: 0, ready: true, buildings, updateMs: [] }
   }, [buildings])
   useFrame(() => {
     const a = acc.current
@@ -36,6 +47,27 @@ function FpsMeter({ buildings }: { buildings: number }) {
       window.__repocity?.fps.push((a.frames * 1000) / (now - a.t))
       a.frames = 0
       a.t = now
+    }
+  })
+  return null
+}
+
+/** Exposes projection helpers for end-to-end tests (no effect on rendering). */
+function TestHooks() {
+  const { camera, gl } = useThree()
+  useEffect(() => {
+    const v = new THREE.Vector3()
+    const api = window.__repocity
+    if (!api) return
+    api.screenOf = (i: number) => {
+      v.set(cityAnim.x[i], cityAnim.base[i] + cityAnim.h[i] * 0.85, cityAnim.z[i]).project(camera)
+      const r = gl.domElement.getBoundingClientRect()
+      return { x: r.left + (v.x * 0.5 + 0.5) * r.width, y: r.top + (-v.y * 0.5 + 0.5) * r.height, visible: cityAnim.sx[i] > 0.02 && v.z < 1 }
+    }
+    api.tallest = () => {
+      let best = -1
+      for (let i = 0; i < cityAnim.n; i++) if (cityAnim.sx[i] > 0.02 && (best < 0 || cityAnim.h[i] > cityAnim.h[best])) best = i
+      return best
     }
   })
   return null
@@ -78,7 +110,7 @@ function CameraRig({ size }: { size: number }) {
   )
 }
 
-function Scene({ layout, meta, snapshot }: Props) {
+function Scene({ layout, meta, snapshot, lowQuality }: Props & { lowQuality: boolean }) {
   const size = layout.size
   const mode = useCity((s) => s.mode)
   const prediction = useCity((s) => s.prediction)
@@ -105,7 +137,7 @@ function Scene({ layout, meta, snapshot }: Props) {
       <directionalLight
         position={[mid + size * 0.55, size * 1.1, mid + size * 0.3]}
         intensity={2.1}
-        castShadow
+        castShadow={!lowQuality}
         shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.02}
@@ -136,24 +168,41 @@ function Scene({ layout, meta, snapshot }: Props) {
       <LabelProjector districts={labelDistricts} size={size} />
       <CameraRig size={size} />
       <FpsMeter buildings={layout.files.id.length} />
+      <TestHooks />
     </>
   )
+}
+
+/** Quality is adaptive: if the frame rate keeps declining, shadows are switched off and the
+ * pixel ratio drops to 1 (`?quality=high` or `?quality=low` forces a level). */
+function initialQuality(): 'auto' | 'high' | 'low' {
+  const q = new URLSearchParams(window.location.search).get('quality')
+  return q === 'high' || q === 'low' ? q : 'auto'
 }
 
 export function CityScene(props: Props) {
   const labelDistricts = useMemo(() => pickLabelDistricts(props.layout.districts), [props.layout])
   const setHovered = useCity((s) => s.setHovered)
+  const [forced] = useState(initialQuality)
+  const [degraded, setDegraded] = useState(forced === 'low')
+  const lowQuality = forced === 'low' || (forced === 'auto' && degraded)
   return (
     <div className="absolute inset-0" data-testid="city-canvas">
       <Canvas
         shadows
-        dpr={[1, 1.75]}
+        dpr={lowQuality ? 1 : [1, 1.75]}
         camera={{ fov: 45, near: 1, far: props.layout.size * 20, position: [1500, 800, 1500] }}
         gl={{ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true }}
         onPointerMissed={() => setHovered(null)}
       >
-        <Scene {...props} />
+        {forced === 'auto' && <PerformanceMonitor flipflops={1} onDecline={() => setDegraded(true)} />}
+        <Scene {...props} lowQuality={lowQuality} />
       </Canvas>
+      {lowQuality && (
+        <div className="pointer-events-none absolute bottom-[104px] right-4 rounded-md bg-slate-900/70 px-2 py-1 text-[10.5px] text-slate-400" data-testid="low-quality">
+          reduced quality (shadows off) for smoother rendering
+        </div>
+      )}
       <LabelLayer districts={labelDistricts} />
     </div>
   )

@@ -1,0 +1,66 @@
+# Repositories analysed in the evaluation (Section 7).
+# Every repository was verified to exist and be public (git ls-remote), and is permissively
+# licensed. `commit` pins the exact snapshot analysed; run_all.py checks it out by hash.
+# Selection: 12 well-known libraries, 3 languages x 4 projects, 2k-10k commits each,
+# >= 3 years of history, still maintained (the evaluation needs bug fixes in the last 3 years).
+repos:
+  - name: flask
+    url: https://github.com/pallets/flask
+    commit: d086db856be187255b8ec61ef409357393020f32
+    language: Python
+    license: BSD-3-Clause
+  - name: requests
+    url: https://github.com/psf/requests
+    commit: 611c6162cbc4ac2020a2f91c7cfa4f3abf9bbb60
+    language: Python
+    license: Apache-2.0
+  - name: click
+    url: https://github.com/pallets/click
+    commit: 2247b35ea1c47c727d7a06e51fa280e12a863ff6
+    language: Python
+    license: BSD-3-Clause
+  - name: werkzeug
+    url: https://github.com/pallets/werkzeug
+    commit: 3e430f68900f2ffd89906137526a722eb4f6ebbb
+    language: Python
+    license: BSD-3-Clause
+  - name: express
+    url: https://github.com/expressjs/express
+    commit: a419aa7350389a275ab45fde2e849ed1f02449ef
+    language: JavaScript
+    license: MIT
+  - name: axios
+    url: https://github.com/axios/axios
+    commit: f694ecd6ac49bb1917e086b5e532e1627c62d43a
+    language: JavaScript/TypeScript
+    license: MIT
+  - name: moment
+    url: https://github.com/moment/moment
+    commit: c2a703a4d84aa57ee2722ff8fb4a8016279fb3c4
+    language: JavaScript
+    license: MIT
+  - name: mocha
+    url: https://github.com/mochajs/mocha
+    commit: 2c2b89600e3ba8225bf11d7919e698060a55c86e
+    language: JavaScript
+    license: MIT
+  - name: commons-lang
+    url: https://github.com/apache/commons-lang
+    commit: dd2c9e85784b288c7507c3736818040b3b457842
+    language: Java
+    license: Apache-2.0
+  - name: commons-io
+    url: https://github.com/apache/commons-io
+    commit: 59b09cf2327fd789372181b189a04ae16c7b5203
+    language: Java
+    license: Apache-2.0
+  - name: jsoup
+    url: https://github.com/jhy/jsoup
+    commit: 088614f4a1454232a1f03c63b7f80742f1f2a854
+    language: Java
+    license: MIT
+  - name: gson
+    url: https://github.com/google/gson
+    commit: 67427c40f7306276e63e09c8bb66fefb90429d86
+    language: Java
+    license: Apache-2.0

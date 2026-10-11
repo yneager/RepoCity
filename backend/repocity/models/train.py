@@ -15,7 +15,8 @@ Models:
 
 Baselines: random, LOC, recent churn (6 months), CodeScene-style hotspot
 (normalised 12-month revisions x normalised complexity; Tornhill, *Your Code as a
-Crime Scene*, 2015) and FixCache (Kim et al. 2007).
+Crime Scene*, 2015) and FixCache (Kim et al. 2007). ManualUp (smallest file first) is
+added as the classic effort-aware reference (Mende & Koschke 2010).
 """
 
 from __future__ import annotations
@@ -36,7 +37,7 @@ from repocity.models.features import FEATURES, RepoData, build_features, build_l
 from repocity.models.fixcache import build_stream, fixcache_scores
 from repocity.timeutil import add_months, month_end_ts, months_between
 
-METHODS = ["lightgbm", "logreg", "random", "loc", "churn", "hotspot", "fixcache"]
+METHODS = ["lightgbm", "logreg", "random", "loc", "churn", "hotspot", "fixcache", "manualup"]
 METHOD_LABELS = {
     "lightgbm": "LightGBM",
     "logreg": "Logistic regression",
@@ -45,8 +46,11 @@ METHOD_LABELS = {
     "churn": "Recent churn",
     "hotspot": "Hotspot",
     "fixcache": "FixCache",
+    "manualup": "ManualUp",
 }
-BASELINES = ["random", "loc", "churn", "hotspot", "fixcache"]
+# The five baselines of the research question, plus ManualUp ("smallest files first",
+# Mende & Koschke 2010; Zhou et al., TSE 2018) as an extra reference for effort-aware metrics.
+BASELINES = ["random", "loc", "churn", "hotspot", "fixcache", "manualup"]
 
 warnings.filterwarnings("ignore", message=".*X does not have valid feature names.*")
 
@@ -95,6 +99,7 @@ def baseline_scores(feats: pd.DataFrame, seed: int, month: str) -> dict[str, np.
         "loc": feats["loc"].to_numpy(float),
         "churn": feats["churn_6m"].to_numpy(float),
         "hotspot": (_minmax(feats["n_commits_12m"]) * _minmax(complexity)).to_numpy(float),
+        "manualup": 1.0 / np.maximum(feats["loc"].to_numpy(float), 1.0),
     }
 
 

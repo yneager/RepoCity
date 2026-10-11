@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
-from repocity.ingest.history import FileChange, IdentityTracker, hash_author, initials, is_source_file, read_history
+from repocity.ingest.history import (
+    FileChange,
+    IdentityTracker,
+    hash_author,
+    initials,
+    is_source_file,
+    read_history,
+)
 from repocity.ingest.snapshots import build_history
 from repocity.store.db import Store
 

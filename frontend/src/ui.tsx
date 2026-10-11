@@ -111,11 +111,11 @@ export function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`skeleton ${className}`} />
 }
 
-export function Stat({ label, value, sub }: { label: string; value: ReactNode; sub?: ReactNode }) {
+export function Stat({ label, value, sub, testid }: { label: string; value: ReactNode; sub?: ReactNode; testid?: string }) {
   return (
     <div className="min-w-0">
       <div className="text-[11px] text-slate-400">{label}</div>
-      <div className="truncate text-[15px] font-semibold tabular-nums text-slate-100">{value}</div>
+      <div className="truncate text-[15px] font-semibold tabular-nums text-slate-100" data-testid={testid}>{value}</div>
       {sub && <div className="text-[11px] text-slate-500">{sub}</div>}
     </div>
   )

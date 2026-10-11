@@ -71,6 +71,7 @@ export function Buildings({ layout, meta, snapshot }: Props) {
     const m = mesh.current
     const t = state.target
     if (!m || !t || !state.active || !m.instanceColor) return
+    const t0 = performance.now()
     const dt = Math.min(delta, 0.1)
     const { x, z, base, h, sx, sz } = cityAnim
     const mat = m.instanceMatrix.array as Float32Array
@@ -115,6 +116,11 @@ export function Buildings({ layout, meta, snapshot }: Props) {
     m.instanceMatrix.needsUpdate = true
     m.instanceColor.needsUpdate = true
     cityAnim.version++
+    const perf = window.__repocity
+    if (perf) {
+      perf.updateMs.push(performance.now() - t0)
+      if (perf.updateMs.length > 2000) perf.updateMs.shift()
+    }
     if (!moving) {
       state.active = false
       m.computeBoundingSphere()

@@ -32,16 +32,30 @@ DEFAULT_KEYWORDS = [
     "patch", "patched", "resolve", "resolves", "resolved", "regression", "issue #",
     "npe", "nullpointerexception", "incorrect", "wrong", "broken", "workaround",
 ]
+# One optional filler word between "fix" and the object, as long as it is not itself a bug word.
+_W = r"(?:(?!(?:crash|bug|error|wrong|regression|npe|fault|defect|leak|race|deadlock)\w*\b)\w+\s+)?"
 DEFAULT_EXCLUDES = [
-    r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|minor\s+|small\s+)?(typos?|spelling|grammar|wording|whitespace|indent(ation)?|formatting|format|style|lint(ing)?|pep\s?8|flake8|mypy|typing|type hints?|annotations?|imports?)\b",
-    r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+)?(docs?|documentation|docstrings?|readme|changelog|changes|comments?|links?|urls?|examples?|tutorial|copyright|license|headers?|javadoc|jsdoc)\b",
+    # static-analysis / tooling clean-ups are not bug fixes ("Fix Checkstyle errors", "fix lint warnings");
+    # listed first because exclusions are applied in order
+    r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|more\s+)?(pmd|checkstyle|spotbugs|findbugs|sonar\w*|errorprone|error[- ]prone|lint|eslint|tslint|jshint|jscs|prettier|compiler|javac|deprecations?|deprecated|raw\s?types?|generics?|static analysis|code\s?style|codestyle)"
+    r"(\s+(issues?|errors?|warnings?|violations?|complaints?|problems?|findings?))?\b",
+    r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|more\s+)?warnings?\b",
+    r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|small\s+)?" + _W
+    + r"(typos?|spelling|grammar|wording|whitespace|indent(ation)?|formatting|format|style|lint(ing)?|pep\s?8|flake8|mypy|typing|type hints?|annotations?|imports?)\b",
+    r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+)?" + _W
+    + r"(docs?|documentation|docstrings?|readme|changelog|changes|comments?|links?|urls?|examples?|tutorial|copyright|license|headers?|javadoc|jsdoc)\b",
     r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+)?(ci|build|travis|appveyor|github actions|workflow|tests? names?|coverage|release|version)\b",
     r"\b(error|errors)\s+(messages?|handling|reporting|pages?)\b",
     r"\bresolv(e|es|ed|ing)\s+(the\s+)?(merge\s+)?conflicts?\b",
     r"\bpatch\s+(release|version|level)\b",
 ]
-# A message matching a veto is never a bug fix (Conventional-Commits types that are not fixes).
-DEFAULT_VETOES = [r"^\s*(docs?|chore|style|ci|build|test|tests|refactor|perf|release)(\(.*?\))?!?:"]
+# A message matching a veto is never a bug fix (Conventional-Commits types that are not fixes,
+# and dependency bumps written as "fix(deps): ...").
+DEFAULT_VETOES = [
+    r"^\s*(\((docs?|chore|style|ci|build|tests?|refactor|perf|release)\)|(docs?|chore|style|ci|build|tests?|refactor|perf|release)(\(.*?\))?!?:)",
+    r"^\s*fix\((deps|deps-dev|dependencies)\)",
+    r"^\s*(bump|update|upgrade)\s+\S+\s+(from|to)\s+v?\d",
+]
 TRAILER_RE = re.compile(r"^(signed-off-by|co-authored-by|reviewed-by|cc|change-id):.*$", re.I | re.M)
 
 

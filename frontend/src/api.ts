@@ -74,7 +74,10 @@ export interface Snapshot {
   risk: number[]
 }
 
-export type MetricSet = Record<'roc_auc' | 'pr_auc' | 'recall_20loc' | 'popt' | 'p_at_10' | 'p_at_20', number | null>
+export type MetricSet = Record<
+  'roc_auc' | 'pr_auc' | 'recall_20loc' | 'popt' | 'p_at_10' | 'p_at_20' | 'recall_20loc_ea' | 'popt_ea',
+  number | null
+>
 
 export interface Prediction {
   cutoff: string

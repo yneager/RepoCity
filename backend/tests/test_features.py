@@ -114,3 +114,13 @@ def test_read_history_matches_pydriller(bug_repo):
             continue  # branch commit (not first-parent)
         theirs = {((m.new_path or m.old_path).replace("\\", "/"), m.added_lines, m.deleted_lines) for m in c.modified_files}
         assert ours[c.hash] == theirs
+
+
+def test_large_fix_commits_are_not_fixes(bug_store):
+    """Mass 'fix' commits (more files than the limit) count as neither labels nor features."""
+    with Store(bug_store) as st:
+        rd0 = load_repo_data(st, max_fix_commit_files=0)
+    assert not rd0.commits["is_bugfix"].any() and rd0.commits["is_bugfix_raw"].sum() == 4
+    files = rd0.snapshot_files.drop_duplicates("file_id").set_index("path")["file_id"]
+    assert build_labels(rd0, "2020-02", 6).sum() == 0
+    assert build_features(rd0, "2020-06").loc[int(files["app.py"]), "n_bugfix"] == 0

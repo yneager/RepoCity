@@ -75,7 +75,7 @@ export function StatsPanel() {
   if (!meta || !st) return null
   return (
     <div className="panel grid grid-cols-2 gap-x-4 gap-y-3 p-4" data-testid="stats-panel">
-      <Stat label="Files" value={formatNumber(st.files)} />
+      <Stat label="Files" value={st.files} testid="stat-files" />
       <Stat label="Lines of code" value={formatNumber(st.loc)} />
       <Stat label="Commits so far" value={formatNumber(st.commits)} sub={`of ${formatNumber(meta.nCommits)}`} />
       <Stat label="Bug-fix commits" value={formatNumber(st.fixes)} sub={`${Math.round((100 * st.fixes) / Math.max(1, st.commits))}% of commits`} />

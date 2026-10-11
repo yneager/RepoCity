@@ -1,0 +1,29 @@
+# One command: `docker compose up`, then open http://localhost:5173
+# The three pre-analysed demo cities in demo/cache work without internet access
+# (only building the images the first time needs to download dependencies).
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./demo/cache:/app/demo/cache:ro
+      - repocity-data:/data
+    environment:
+      REPOCITY_MAX_COMMITS: "30000"
+      REPOCITY_MAX_REPO_MB: "1500"
+      REPOCITY_CLONE_TIMEOUT: "900"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+  frontend:
+    build: ./frontend
+    environment:
+      REPOCITY_API: http://backend:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  repocity-data:
