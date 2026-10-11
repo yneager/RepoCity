@@ -6,7 +6,7 @@
       "runtimeExecutable": ".venv/Scripts/python.exe",
       "runtimeArgs": ["-m", "uvicorn", "repocity.api.app:app", "--port", "8000"],
       "port": 8000,
-      "env": { "REPOCITY_DEMO_DIR": "data/tmpbundle" }
+      "env": { "REPOCITY_DEMO_DIR": "demo/cache" }
     },
     {
       "name": "frontend",

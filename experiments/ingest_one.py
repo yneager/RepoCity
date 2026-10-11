@@ -10,7 +10,6 @@ import sys
 import time
 
 from common import CONFIGS, analysis_config, load_experiment, load_repos
-
 from repocity.pipeline.analyze import ingest
 from repocity.store.db import Store
 from repocity.szz.bugfix import BugfixClassifier

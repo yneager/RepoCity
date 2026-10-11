@@ -25,6 +25,7 @@ interface CityState {
   hovered: number | null
   selected: number | null
   flyNonce: number
+  resetNonce: number
   fileDetail: FileDetail | null
   fileLoading: boolean
 
@@ -43,6 +44,7 @@ interface CityState {
   setSpeed: (s: number) => void
   setHovered: (i: number | null) => void
   select: (i: number | null, fly?: boolean) => void
+  resetView: () => void
   enterPvr: () => void
   exitPvr: () => void
   setPvrCutoff: (c: string) => Promise<void>
@@ -113,6 +115,7 @@ export const useCity = create<CityState>((set, get) => {
     hovered: null,
     selected: null,
     flyNonce: 0,
+    resetNonce: 0,
     fileDetail: null,
     fileLoading: false,
     pvrCutoff: null,
@@ -184,6 +187,8 @@ export const useCity = create<CityState>((set, get) => {
         })
         .catch(() => set({ fileLoading: false }))
     },
+
+    resetView: () => set({ resetNonce: get().resetNonce + 1 }),
 
     enterPvr() {
       const meta = get().meta

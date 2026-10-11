@@ -55,50 +55,71 @@ export function TopKOutlines({ indices, size }: { indices: number[]; size: numbe
 }
 
 const markerGeometry = new THREE.OctahedronGeometry(1, 0)
+const ringGeometry = (() => {
+  const g = new THREE.TorusGeometry(1, 0.12, 6, 32)
+  g.rotateX(Math.PI / 2)
+  return g
+})()
 
-/** Pulsing diamonds above files that actually received bug fixes after the cutoff.
- *  Green = predicted (in top-k), magenta = missed by the model. */
+/** Pulsing diamonds (+ a ring on the roof) above files that actually received bug fixes after the cutoff.
+ *  Green = predicted (in top-k), magenta = missed by the model. Unlit so the colours stay vivid. */
 export function RevealMarkers({ indices, hits, size }: { indices: number[]; hits: Set<number>; size: number }) {
   const mesh = useRef<THREE.InstancedMesh>(null)
+  const rings = useRef<THREE.InstancedMesh>(null)
   const start = useRef(0)
   const colors = useMemo(() => {
     const a = new THREE.InstancedBufferAttribute(new Float32Array(Math.max(1, indices.length) * 3), 3)
     const hit = new THREE.Color('#4ade80')
-    const miss = new THREE.Color('#e879f9')
+    const miss = new THREE.Color('#f0abfc')
     indices.forEach((b, k) => {
       const c = hits.has(b) ? hit : miss
       a.setXYZ(k, c.r, c.g, c.b)
     })
     return a
   }, [indices, hits])
+  const ringColors = useMemo(() => colors.clone(), [colors])
   useEffect(() => {
     start.current = performance.now() / 1000
   }, [indices])
   const tmp = useMemo(() => new THREE.Matrix4(), [])
   useFrame(() => {
     const m = mesh.current
-    if (!m) return
+    const rg = rings.current
+    if (!m || !rg) return
     const t = performance.now() / 1000 - start.current
-    const r = size * 0.0075
+    const r = size * 0.015
     indices.forEach((b, k) => {
       // staggered drop-in, then a gentle pulse and bob
       const appear = Math.min(1, Math.max(0, (t - k * 0.04) / 0.5))
       const ease = 1 - Math.pow(1 - appear, 3)
       const pulse = 1 + 0.18 * Math.sin(t * 5 + k)
-      const y = cityAnim.base[b] + cityAnim.h[b] + r * 2.2 + Math.sin(t * 2 + k) * r * 0.35 + (1 - ease) * size * 0.08
+      const roof = cityAnim.base[b] + cityAnim.h[b]
+      const y = roof + r * 2.6 + Math.sin(t * 2 + k) * r * 0.35 + (1 - ease) * size * 0.08
       const s = r * pulse * ease
-      tmp.makeScale(s, s * 1.4, s)
+      tmp.makeScale(s, s * 1.5, s)
       tmp.setPosition(cityAnim.x[b], y, cityAnim.z[b])
       m.setMatrixAt(k, tmp)
+      const phase = ((t * 0.8 + k * 0.13) % 1)
+      const rr = (Math.max(cityAnim.sx[b], cityAnim.sz[b]) * (0.22 + phase * 0.28) + r * 0.6) * ease
+      tmp.makeScale(rr, rr, rr)
+      tmp.setPosition(cityAnim.x[b], roof + 0.3, cityAnim.z[b])
+      rg.setMatrixAt(k, tmp)
     })
     m.instanceMatrix.needsUpdate = true
+    rg.instanceMatrix.needsUpdate = true
   })
   if (!indices.length) return null
   return (
-    <instancedMesh ref={mesh} args={[markerGeometry, undefined, indices.length]} frustumCulled={false} raycast={() => null}>
-      <primitive object={colors} attach="instanceColor" />
-      <meshStandardMaterial emissive="#ffffff" emissiveIntensity={0.35} roughness={0.3} />
-    </instancedMesh>
+    <group>
+      <instancedMesh ref={mesh} args={[markerGeometry, undefined, indices.length]} frustumCulled={false} raycast={() => null} renderOrder={11}>
+        <primitive object={colors} attach="instanceColor" />
+        <meshBasicMaterial toneMapped={false} />
+      </instancedMesh>
+      <instancedMesh ref={rings} args={[ringGeometry, undefined, indices.length]} frustumCulled={false} raycast={() => null}>
+        <primitive object={ringColors} attach="instanceColor" />
+        <meshBasicMaterial toneMapped={false} transparent opacity={0.85} />
+      </instancedMesh>
+    </group>
   )
 }
 

@@ -1,0 +1,7 @@
+Endpoint,p50 latency (ms),"p95 latency (ms, worst demo repo)","Response size (KB, gzip)"
+GET /demo,0.9,1.2,0.9
+GET file detail,0.8,1.1,6.9
+GET layout,0.7,0.9,30.3
+GET meta,0.6,0.9,9.2
+GET predictions,0.7,0.9,23.7
+GET snapshot,0.6,0.8,9.0

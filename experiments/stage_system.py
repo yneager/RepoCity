@@ -26,13 +26,13 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-from common import RESULTS, ROOT, load_experiment, load_repos, model_config  # noqa: E402
-from stage_report import COLORS, INK, INK2, save, write_table  # noqa: E402
 
+from common import RESULTS, ROOT, load_experiment, load_repos, model_config  # noqa: E402
 from repocity.models.train import Predictor  # noqa: E402
 from repocity.pipeline.analyze import load_repo_data  # noqa: E402
 from repocity.pipeline.export import export_bundle  # noqa: E402
 from repocity.store.db import Store  # noqa: E402
+from stage_report import COLORS, INK, INK2, save, write_table  # noqa: E402
 
 FRONTEND = ROOT / "frontend"
 NPM = "npm.cmd" if os.name == "nt" else "npm"
@@ -113,24 +113,36 @@ def api_latency(n: int = 60) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+FPS_CONFIGS = {
+    # name: environment for e2e/fps-bench.mjs
+    "gpu": {},  # hardware WebGL, vsync on: what a user sees
+    "gpu_uncapped": {"FPS_UNCAPPED": "1"},  # hardware WebGL without the 60 Hz cap: shows headroom
+    "software": {"FPS_RENDERER": "swiftshader"},  # CPU-only rendering: lower bound for machines without a usable GPU
+}
+
+
 def fps_benchmark(counts: list[int]) -> dict:
-    """Build the frontend, serve it with `vite preview`, and run the Playwright FPS script."""
+    """Build the frontend, serve it with `vite preview`, and run the Playwright FPS script per renderer."""
     if shutil.which(NPM) is None:
         return {"status": "skipped", "reason": "npm not found"}
     subprocess.run([NPM, "run", "build"], cwd=FRONTEND, check=True, capture_output=True)
     port = free_port()
     server = subprocess.Popen([NPX, "vite", "preview", "--port", str(port), "--strictPort"], cwd=FRONTEND,
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    out: dict = {"status": "ok", "configs": {}}
     try:
         wait_http(f"http://127.0.0.1:{port}/")
-        out = RESULTS / "e7_fps.json"
-        subprocess.run(["node", "e2e/fps-bench.mjs", f"http://127.0.0.1:{port}", str(out), *map(str, counts)],
-                       cwd=FRONTEND, check=True)
-        return json.loads(out.read_text())
+        for name, env in FPS_CONFIGS.items():
+            path = RESULTS / f"e7_fps_{name}.json"
+            print(f"  FPS benchmark: {name}", flush=True)
+            subprocess.run(["node", "e2e/fps-bench.mjs", f"http://127.0.0.1:{port}", str(path), *map(str, counts)],
+                           cwd=FRONTEND, check=True, env={**os.environ, **env})
+            out["configs"][name] = json.loads(path.read_text())
     finally:
         server.terminate()
         if os.name == "nt":
             subprocess.run(["taskkill", "/F", "/T", "/PID", str(server.pid)], capture_output=True)
+    return out
 
 
 def run(only=None, skip_fps: bool = False) -> dict:
@@ -169,23 +181,37 @@ def run(only=None, skip_fps: bool = False) -> dict:
 
     fps = {"status": "skipped"} if skip_fps else fps_benchmark(exp["fps_building_counts"])
     if fps.get("status") == "ok":
-        rows = fps["results"]
-        write_table(pd.DataFrame({"Buildings": [r["buildings"] for r in rows], "Median FPS": [round(r["median_fps"], 1) for r in rows],
-                                  "5th percentile FPS": [round(r["p5_fps"], 1) for r in rows]}),
-                    "e7_fps", f"E7 frontend FPS, Chromium {fps.get('browser', '')}, renderer: {fps.get('renderer', 'unknown')}")
-        fig, ax = plt.subplots(figsize=(6.5, 3.2))
-        xs = [r["buildings"] for r in rows]
-        ax.plot(xs, [r["median_fps"] for r in rows], marker="o", color=COLORS["lightgbm"], linewidth=2, label="median FPS")
-        ax.plot(xs, [r["p5_fps"] for r in rows], marker="o", color=COLORS["logreg"], linewidth=2, label="5th percentile FPS")
+        cfgs = fps["configs"]
+        counts = [r["buildings"] for r in cfgs["gpu"]["results"]]
+        table = {"Buildings": counts}
+        labels = {"gpu": "GPU, vsync", "gpu_uncapped": "GPU, uncapped", "software": "CPU only (SwiftShader)"}
+        for name, cfg in cfgs.items():
+            table[f"{labels[name]}: median FPS"] = [round(r["median_fps"], 1) for r in cfg["results"]]
+        table["JS update per frame (ms)"] = [round(r["median_update_ms"] or 0, 2) for r in cfgs["gpu_uncapped"]["results"]]
+        write_table(pd.DataFrame(table), "e7_fps",
+                    f"E7 frontend FPS (median of 1 s samples over 8 s, all buildings animating). GPU = {cfgs['gpu']['renderer']}; "
+                    f"{cfgs['gpu']['browser']}")
+        fig, axes = plt.subplots(1, 2, figsize=(11, 3.4))
+        ax = axes[0]
+        for name, color in [("gpu", COLORS["lightgbm"]), ("software", COLORS["logreg"])]:
+            ax.plot(counts, [r["median_fps"] for r in cfgs[name]["results"]], marker="o", color=color, linewidth=2, label=labels[name])
         ax.axhline(60, color=INK2, linewidth=0.8, linestyle="--")
         ax.axhline(30, color=INK2, linewidth=0.8, linestyle=":")
-        ax.text(xs[-1], 61, "60 fps target", ha="right", va="bottom", fontsize=7.5, color=INK2)
-        ax.text(xs[-1], 31, "30 fps usable", ha="right", va="bottom", fontsize=7.5, color=INK2)
+        ax.text(counts[-1], 61, "60 fps target", ha="right", va="bottom", fontsize=7.5, color=INK2)
+        ax.text(counts[-1], 31, "30 fps usable", ha="right", va="bottom", fontsize=7.5, color=INK2)
+        ax.set_ylim(0, 75)
         ax.set_xlabel("Buildings (animated)")
         ax.set_ylabel("Frames per second")
-        ax.set_ylim(0, max(70, max(r["median_fps"] for r in rows) + 10))
-        ax.set_title("E7 rendering performance")
-        ax.legend(loc="lower left")
+        ax.legend(loc="center right")
+        ax.set_title("What the user sees")
+        ax = axes[1]
+        ax.plot(counts, [r["median_fps"] for r in cfgs["gpu_uncapped"]["results"]], marker="o", color=COLORS["lightgbm"], linewidth=2)
+        ax.set_xlabel("Buildings (animated)")
+        ax.set_ylabel("Frames per second (uncapped)")
+        ax.set_yscale("log")
+        ax.set_title("GPU headroom without the 60 Hz cap")
+        fig.suptitle("E7 rendering performance", fontsize=11, color=INK)
+        fig.tight_layout()
         save(fig, "e7_fps")
     summary = {"analysis": perf.to_dict("records"), "api": lat.to_dict("records"), "fps": fps}
     (RESULTS / "summary_system.json").write_text(json.dumps(summary, indent=1, default=float))

@@ -1,0 +1,616 @@
+{
+ "analysis": [
+  {
+   "repo": "axios",
+   "ingest_seconds": 20.870737299999746,
+   "steps": {
+    "history": 7.854315500000666,
+    "bugfix": 0.07009420000395039,
+    "szz": 12.829539099999238
+   },
+   "commits": 1893,
+   "file_identities": 397,
+   "files_last": 264,
+   "bugfix_commits": 606,
+   "wall_seconds": 22.418526699999347,
+   "peak_rss_mb": 1557.123072,
+   "model_export_seconds": 5.894994399997813,
+   "cutoffs": 45,
+   "total_seconds": 28.31352109999716
+  },
+  {
+   "repo": "click",
+   "ingest_seconds": 10.92428469999868,
+   "steps": {
+    "history": 6.158866099998704,
+    "bugfix": 0.057858699998178054,
+    "szz": 4.613394699998025
+   },
+   "commits": 1384,
+   "file_identities": 111,
+   "files_last": 91,
+   "bugfix_commits": 347,
+   "wall_seconds": 12.553558300001896,
+   "peak_rss_mb": 1585.152,
+   "model_export_seconds": 5.081081500000437,
+   "cutoffs": 47,
+   "total_seconds": 17.634639800002333
+  },
+  {
+   "repo": "commons-io",
+   "ingest_seconds": 40.23409349999565,
+   "steps": {
+    "history": 22.14493510000466,
+    "bugfix": 0.1764208000022336,
+    "szz": 17.66743239999778
+   },
+   "commits": 5844,
+   "file_identities": 657,
+   "files_last": 556,
+   "bugfix_commits": 611,
+   "wall_seconds": 41.94364240000141,
+   "peak_rss_mb": 1765.261312,
+   "model_export_seconds": 14.916278099997726,
+   "cutoffs": 96,
+   "total_seconds": 56.859920499999134
+  },
+  {
+   "repo": "commons-lang",
+   "ingest_seconds": 91.38403399999515,
+   "steps": {
+    "history": 52.763170700003684,
+    "bugfix": 0.3205551999999443,
+    "szz": 37.952757699997164
+   },
+   "commits": 9397,
+   "file_identities": 1125,
+   "files_last": 628,
+   "bugfix_commits": 1244,
+   "wall_seconds": 93.00082899999688,
+   "peak_rss_mb": 1886.134272,
+   "model_export_seconds": 18.222520099996473,
+   "cutoffs": 94,
+   "total_seconds": 111.22334909999336
+  },
+  {
+   "repo": "express",
+   "ingest_seconds": 20.93905680000171,
+   "steps": {
+    "history": 11.14104220000445,
+    "bugfix": 0.11690970000199741,
+    "szz": 9.536960700002965
+   },
+   "commits": 3911,
+   "file_identities": 356,
+   "files_last": 141,
+   "bugfix_commits": 509,
+   "wall_seconds": 22.55220410000038,
+   "peak_rss_mb": 1554.333696,
+   "model_export_seconds": 7.975141599999915,
+   "cutoffs": 66,
+   "total_seconds": 30.527345700000296
+  },
+  {
+   "repo": "flask",
+   "ingest_seconds": 13.777028899996367,
+   "steps": {
+    "history": 6.748238899999706,
+    "bugfix": 0.08076380000420613,
+    "szz": 6.831460100002005
+   },
+   "commits": 2280,
+   "file_identities": 170,
+   "files_last": 83,
+   "bugfix_commits": 502,
+   "wall_seconds": 15.4883045999959,
+   "peak_rss_mb": 1591.267328,
+   "model_export_seconds": 7.258892399993783,
+   "cutoffs": 63,
+   "total_seconds": 22.747196999989683
+  },
+  {
+   "repo": "gson",
+   "ingest_seconds": 23.335574600001564,
+   "steps": {
+    "history": 11.639861300005578,
+    "bugfix": 0.13052720000268891,
+    "szz": 11.407381299999543
+   },
+   "commits": 2058,
+   "file_identities": 532,
+   "files_last": 264,
+   "bugfix_commits": 463,
+   "wall_seconds": 24.906663399997342,
+   "peak_rss_mb": 1639.636992,
+   "model_export_seconds": 10.020029500003147,
+   "cutoffs": 69,
+   "total_seconds": 34.92669290000049
+  },
+  {
+   "repo": "jsoup",
+   "ingest_seconds": 24.05606429999898,
+   "steps": {
+    "history": 11.909263699999428,
+    "bugfix": 0.14330519999930402,
+    "szz": 11.870921499998076
+   },
+   "commits": 2362,
+   "file_identities": 273,
+   "files_last": 205,
+   "bugfix_commits": 630,
+   "wall_seconds": 25.585778499997105,
+   "peak_rss_mb": 1664.114688,
+   "model_export_seconds": 8.58267799999885,
+   "cutoffs": 64,
+   "total_seconds": 34.168456499995955
+  },
+  {
+   "repo": "mocha",
+   "ingest_seconds": 24.73536299999978,
+   "steps": {
+    "history": 12.425315099993895,
+    "bugfix": 0.12579689999984112,
+    "szz": 11.98809220000112
+   },
+   "commits": 3142,
+   "file_identities": 613,
+   "files_last": 478,
+   "bugfix_commits": 749,
+   "wall_seconds": 26.33336839999538,
+   "peak_rss_mb": 1603.751936,
+   "model_export_seconds": 8.971581500001776,
+   "cutoffs": 57,
+   "total_seconds": 35.304949899997155
+  },
+  {
+   "repo": "moment",
+   "ingest_seconds": 31.035526699997718,
+   "steps": {
+    "history": 15.562031900000875,
+    "bugfix": 0.06630929999664659,
+    "szz": 15.170249399998283
+   },
+   "commits": 1763,
+   "file_identities": 832,
+   "files_last": 634,
+   "bugfix_commits": 583,
+   "wall_seconds": 32.74351749999914,
+   "peak_rss_mb": 1627.262976,
+   "model_export_seconds": 9.49262330000056,
+   "cutoffs": 59,
+   "total_seconds": 42.2361407999997
+  },
+  {
+   "repo": "requests",
+   "ingest_seconds": 13.210653499998443,
+   "steps": {
+    "history": 6.850079099996947,
+    "bugfix": 0.07755420000466984,
+    "szz": 6.168760300002759
+   },
+   "commits": 2669,
+   "file_identities": 274,
+   "files_last": 37,
+   "bugfix_commits": 510,
+   "wall_seconds": 14.888247400005639,
+   "peak_rss_mb": 1583.304704,
+   "model_export_seconds": 6.12083580000035,
+   "cutoffs": 59,
+   "total_seconds": 21.00908320000599
+  },
+  {
+   "repo": "werkzeug",
+   "ingest_seconds": 28.324958800003515,
+   "steps": {
+    "history": 11.075152199999138,
+    "bugfix": 0.1560542000006535,
+    "szz": 16.952920800002175
+   },
+   "commits": 3130,
+   "file_identities": 291,
+   "files_last": 143,
+   "bugfix_commits": 871,
+   "wall_seconds": 29.992297199998575,
+   "peak_rss_mb": 1649.569792,
+   "model_export_seconds": 10.64202180000575,
+   "cutoffs": 74,
+   "total_seconds": 40.634319000004325
+  }
+ ],
+ "api": [
+  {
+   "repo": "expressjs/express",
+   "endpoint": "GET /demo",
+   "p50_ms": 0.9257499987143092,
+   "p95_ms": 1.159660005214391,
+   "bytes": 869
+  },
+  {
+   "repo": "expressjs/express",
+   "endpoint": "GET meta",
+   "p50_ms": 0.6258499997784384,
+   "p95_ms": 0.8942749973357419,
+   "bytes": 9250
+  },
+  {
+   "repo": "expressjs/express",
+   "endpoint": "GET layout",
+   "p50_ms": 0.702500001352746,
+   "p95_ms": 0.9011699992697685,
+   "bytes": 30288
+  },
+  {
+   "repo": "expressjs/express",
+   "endpoint": "GET snapshot",
+   "p50_ms": 0.6319999993138481,
+   "p95_ms": 0.8444450002571101,
+   "bytes": 8996
+  },
+  {
+   "repo": "expressjs/express",
+   "endpoint": "GET predictions",
+   "p50_ms": 0.6791000014345627,
+   "p95_ms": 0.8688050034834305,
+   "bytes": 17328
+  },
+  {
+   "repo": "expressjs/express",
+   "endpoint": "GET file detail",
+   "p50_ms": 0.7849499997973908,
+   "p95_ms": 0.9536350014968775,
+   "bytes": 4142
+  },
+  {
+   "repo": "jhy/jsoup",
+   "endpoint": "GET /demo",
+   "p50_ms": 0.9285500054829754,
+   "p95_ms": 1.145179999730317,
+   "bytes": 869
+  },
+  {
+   "repo": "jhy/jsoup",
+   "endpoint": "GET meta",
+   "p50_ms": 0.6083499974920414,
+   "p95_ms": 0.743960000181687,
+   "bytes": 8836
+  },
+  {
+   "repo": "jhy/jsoup",
+   "endpoint": "GET layout",
+   "p50_ms": 0.6562000016856473,
+   "p95_ms": 0.8466900046187218,
+   "bytes": 24571
+  },
+  {
+   "repo": "jhy/jsoup",
+   "endpoint": "GET snapshot",
+   "p50_ms": 0.6444999999075662,
+   "p95_ms": 0.7954450022225501,
+   "bytes": 6972
+  },
+  {
+   "repo": "jhy/jsoup",
+   "endpoint": "GET predictions",
+   "p50_ms": 0.7043999976303894,
+   "p95_ms": 0.9080150011868682,
+   "bytes": 23721
+  },
+  {
+   "repo": "jhy/jsoup",
+   "endpoint": "GET file detail",
+   "p50_ms": 0.7912000000942498,
+   "p95_ms": 1.1354100010066754,
+   "bytes": 6932
+  },
+  {
+   "repo": "pallets/flask",
+   "endpoint": "GET /demo",
+   "p50_ms": 0.9533999982522801,
+   "p95_ms": 1.1494800030050099,
+   "bytes": 869
+  },
+  {
+   "repo": "pallets/flask",
+   "endpoint": "GET meta",
+   "p50_ms": 0.6136499978310894,
+   "p95_ms": 0.7960299932165071,
+   "bytes": 8898
+  },
+  {
+   "repo": "pallets/flask",
+   "endpoint": "GET layout",
+   "p50_ms": 0.6532000043080188,
+   "p95_ms": 0.7940000014059476,
+   "bytes": 17962
+  },
+  {
+   "repo": "pallets/flask",
+   "endpoint": "GET snapshot",
+   "p50_ms": 0.6295499988482334,
+   "p95_ms": 0.7895500057202298,
+   "bytes": 4494
+  },
+  {
+   "repo": "pallets/flask",
+   "endpoint": "GET predictions",
+   "p50_ms": 0.6552499980898574,
+   "p95_ms": 0.8309750017360783,
+   "bytes": 10215
+  },
+  {
+   "repo": "pallets/flask",
+   "endpoint": "GET file detail",
+   "p50_ms": 0.7776999955240171,
+   "p95_ms": 1.0203649988397956,
+   "bytes": 3358
+  }
+ ],
+ "fps": {
+  "status": "ok",
+  "configs": {
+   "gpu": {
+    "status": "ok",
+    "browser": "156.0.8078.4",
+    "headless": true,
+    "software": false,
+    "renderer": "ANGLE (AMD, AMD Radeon RX 9070 XT (0x00007550) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "results": [
+     {
+      "buildings": 1000,
+      "samples": [
+       60.03346127340866,
+       59.982005398559195,
+       60,
+       59.964021586958474,
+       60.039370078740156,
+       60,
+       60.00983767830792
+      ],
+      "median_fps": 60,
+      "p5_fps": 59.964021586958474,
+      "median_update_ms": 0
+     },
+     {
+      "buildings": 2500,
+      "samples": [
+       60,
+       60,
+       59.95085995085995,
+       60.063016936154,
+       60.0157418335717,
+       59.98800239978821,
+       59.9744371250719
+      ],
+      "median_fps": 60,
+      "p5_fps": 59.95085995085995,
+      "median_update_ms": 0.10000000149011612
+     },
+     {
+      "buildings": 5000,
+      "samples": [
+       59.94005994005994,
+       60.0511911795422,
+       59.982005398559195,
+       60,
+       60.03346127340866,
+       60,
+       59.9803343166175,
+       59.988002399341354
+      ],
+      "median_fps": 60,
+      "p5_fps": 59.94005994005994,
+      "median_update_ms": 0.19999999552965164
+     },
+     {
+      "buildings": 10000,
+      "samples": [
+       59.99213217956215,
+       60,
+       60.0157418335717,
+       59.98800239978821,
+       59.933189231412925,
+       60.063016936154,
+       60.00983767830792,
+       60.00983767830792
+      ],
+      "median_fps": 60.00983767830792,
+      "p5_fps": 59.933189231412925,
+      "median_update_ms": 0.3999999985098839
+     },
+     {
+      "buildings": 20000,
+      "samples": [
+       60,
+       60.00983767830792,
+       60.003934684153634,
+       59.988002399341354,
+       60.0039346845934,
+       60.02164715116765,
+       59.982005398559195,
+       60.01574183401164
+      ],
+      "median_fps": 60.0039346845934,
+      "p5_fps": 59.982005398559195,
+      "median_update_ms": 0.7000000029802322
+     }
+    ]
+   },
+   "gpu_uncapped": {
+    "status": "ok",
+    "browser": "156.0.8078.4",
+    "headless": true,
+    "software": false,
+    "renderer": "ANGLE (AMD, AMD Radeon RX 9070 XT (0x00007550) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "results": [
+     {
+      "buildings": 1000,
+      "samples": [
+       4686.221690126675,
+       4569.543045688622,
+       4736,
+       4780,
+       4682.0635872685925,
+       4710.752044711828,
+       4793.371930503666,
+       4758.524147578151
+      ],
+      "median_fps": 4736,
+      "p5_fps": 4569.543045688622,
+      "median_update_ms": 0
+     },
+     {
+      "buildings": 2500,
+      "samples": [
+       3116,
+       3040.695930402429,
+       3125,
+       3102,
+       3114,
+       3095,
+       3107.1357185873676,
+       3106.6893310622645
+      ],
+      "median_fps": 3107.1357185873676,
+      "p5_fps": 3040.695930402429,
+      "median_update_ms": 0.10000000149011612
+     },
+     {
+      "buildings": 5000,
+      "samples": [
+       1876.8123187793087,
+       1780.2878848354544,
+       2014.395681301613,
+       1829.2682926856517,
+       1749,
+       2007.1971211545292,
+       1967.6064786983964,
+       1813.2746901266514
+      ],
+      "median_fps": 1876.8123187793087,
+      "p5_fps": 1749,
+      "median_update_ms": 0.30000000447034836
+     },
+     {
+      "buildings": 10000,
+      "samples": [
+       1087.891210877291,
+       1072.1422861742558,
+       1089.5641743318909,
+       1107.778444307837,
+       1099.7800439961172,
+       1106.5573770425874,
+       1186.5253898458297,
+       1125.324805115254
+      ],
+      "median_fps": 1106.5573770425874,
+      "p5_fps": 1072.1422861742558,
+      "median_update_ms": 0.6999999955296516
+     },
+     {
+      "buildings": 20000,
+      "samples": [
+       584.5907864520968,
+       601.218416056439,
+       575,
+       564.4919572393258,
+       574.024158932381,
+       628.6228263032813,
+       640.615630620673,
+       607.6354187478458
+      ],
+      "median_fps": 601.218416056439,
+      "p5_fps": 564.4919572393258,
+      "median_update_ms": 1.3000000044703484
+     }
+    ]
+   },
+   "software": {
+    "status": "ok",
+    "browser": "156.0.8078.4",
+    "headless": true,
+    "software": true,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "results": [
+     {
+      "buildings": 1000,
+      "samples": [
+       11.309018942670255,
+       12.390392680102053,
+       13.543581309818745,
+       18.2481751825601,
+       18.059119855501464,
+       18.21319018399705,
+       18.109035455662365,
+       18.20272082766682
+      ],
+      "median_fps": 18.109035455662365,
+      "p5_fps": 11.309018942670255,
+      "median_update_ms": 0.10000000149011612
+     },
+     {
+      "buildings": 2500,
+      "samples": [
+       12.285012285064182,
+       12.157486205878287,
+       12.073929599752926,
+       12.253746818669962,
+       12.293144208037825,
+       12.20313526709506,
+       12.067205049694573,
+       12.304779933743493
+      ],
+      "median_fps": 12.253746818669962,
+      "p5_fps": 12.067205049694573,
+      "median_update_ms": 0.20000000298023224
+     },
+     {
+      "buildings": 5000,
+      "samples": [
+       7.861635220114274,
+       8.475374329044758,
+       9.223390518329195,
+       8.364312267657992,
+       8.269778553730264,
+       8.327935597275081,
+       8.295695455813773,
+       8.133020061438533
+      ],
+      "median_fps": 8.327935597275081,
+      "p5_fps": 7.861635220114274,
+      "median_update_ms": 0.3999999985098839
+     },
+     {
+      "buildings": 10000,
+      "samples": [
+       6.075334143362172,
+       5.687203791469194,
+       5.445634416424242,
+       5.251181515834216,
+       5.267778753292362,
+       5.160846378799509,
+       5.277509015751486
+      ],
+      "median_fps": 5.277509015751486,
+      "p5_fps": 5.160846378799509,
+      "median_update_ms": 0.6000000014901161
+     },
+     {
+      "buildings": 20000,
+      "samples": [
+       4.017354973480647,
+       3.648636322184506,
+       3.4728251432405584,
+       3.3436428989467233,
+       3.262908883273401,
+       3.1360250882007055,
+       3.0639601685178093
+      ],
+      "median_fps": 3.3436428989467233,
+      "p5_fps": 3.0639601685178093,
+      "median_update_ms": 1.6000000014901161
+     }
+    ]
+   }
+  }
+ }
+}

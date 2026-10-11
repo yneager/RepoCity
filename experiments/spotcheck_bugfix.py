@@ -20,8 +20,8 @@ import math
 import sys
 
 import pandas as pd
-from common import RESULTS, ROOT, load_experiment, load_repos
 
+from common import RESULTS, ROOT, load_experiment, load_repos
 from repocity.store.db import Store
 
 OUT = ROOT / "experiments" / "spotcheck" / "bugfix_spotcheck.csv"

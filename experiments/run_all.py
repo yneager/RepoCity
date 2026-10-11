@@ -2,7 +2,7 @@
 
     python experiments/run_all.py                 # everything (clone if needed, re-ingest, E1-E7, report)
     python experiments/run_all.py --reuse-stores  # skip re-ingesting repositories that are already in data/stores
-    python experiments/run_all.py --skip-fps      # skip the browser FPS benchmark (needs Node + Playwright)
+    python experiments/run_all.py --skip-browser  # skip the FPS benchmark and screenshot refresh (need Node + Playwright)
     python experiments/run_all.py --repos flask jsoup   # a subset (quick check)
 
 Stages: ingest -> E1 within-project -> E3 ablation -> E4 cross-project -> E5 SZZ ablation ->
@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -40,7 +41,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--repos", nargs="*", help="only these repositories (names from repos.yaml)")
     ap.add_argument("--reuse-stores", action="store_true", help="do not re-ingest repositories that already have a store")
-    ap.add_argument("--skip-fps", action="store_true", help="skip the Playwright FPS benchmark")
+    ap.add_argument("--skip-browser", "--skip-fps", action="store_true",
+                    help="skip everything that needs Node + Playwright (FPS benchmark, screenshot refresh)")
     ap.add_argument("--skip-demo", action="store_true", help="do not rebuild demo/cache")
     args = ap.parse_args()
     only = args.repos or None
@@ -67,21 +69,23 @@ def main() -> None:
     banner("E2 statistics, tables and figures")
     stage_report.run()
     banner("E6 bug-fix heuristic spot-check")
-    if not (ROOT / "experiments" / "spotcheck" / "bugfix_spotcheck.csv").exists():
-        spotcheck_bugfix.sample()
+    spotcheck_bugfix.sample()  # redraws the sample until it contains manual labels, then never overwrites it
     spotcheck_bugfix.score()
     banner("E7 system performance")
-    stage_system.run(only, skip_fps=args.skip_fps)
+    stage_system.run(only, skip_fps=args.skip_browser)
     banner("City screenshots for the report")
-    copy_screenshots()
+    copy_screenshots(refresh=not args.skip_browser and not only)
     banner("Report")
     make_report.run()
     (RESULTS / "run_info.json").write_text(json.dumps({"seconds": time.time() - t0, "finished": time.strftime("%Y-%m-%d %H:%M:%S")}, indent=1))
     print(f"\nDone in {(time.time() - t0) / 60:.1f} min. See reports/report_draft.md", flush=True)
 
 
-def copy_screenshots() -> None:
-    """Report figures reuse the Playwright e2e screenshots (docs/screenshots)."""
+def copy_screenshots(refresh: bool) -> None:
+    """Report figures reuse the Playwright e2e screenshots (docs/screenshots); refresh them first."""
+    if refresh and shutil.which(stage_system.NPX):
+        r = subprocess.run([stage_system.NPX, "playwright", "test", "city"], cwd=ROOT / "frontend")
+        print(f"  Playwright e2e {'passed' if r.returncode == 0 else 'FAILED'}")
     src = ROOT / "docs" / "screenshots"
     picks = ["02-city-latest", "04-timeline-middle", "06-file-panel", "11-pvr-revealed"]
     found = 0

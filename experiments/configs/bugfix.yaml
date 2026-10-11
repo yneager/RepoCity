@@ -35,7 +35,7 @@ keywords:
 - workaround
 excludes:
 - \bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|more\s+)?(pmd|checkstyle|spotbugs|findbugs|sonar\w*|errorprone|error[- ]prone|lint|eslint|tslint|jshint|jscs|prettier|compiler|javac|deprecations?|deprecated|raw\s?types?|generics?|static analysis|code\s?style|codestyle)(\s+(issues?|errors?|warnings?|violations?|complaints?|problems?|findings?))?\b
-- \bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|more\s+)?warnings?\b
+- \bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|more\s+)?(?:(?!(?:crash|bug|error|wrong|regression|npe|fault|defect|leak|race|deadlock)\w*\b)\w+\s+)?warnings?\b
 - \bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|small\s+)?(?:(?!(?:crash|bug|error|wrong|regression|npe|fault|defect|leak|race|deadlock)\w*\b)\w+\s+)?(typos?|spelling|grammar|wording|whitespace|indent(ation)?|formatting|format|style|lint(ing)?|pep\s?8|flake8|mypy|typing|type hints?|annotations?|imports?)\b
 - \bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+)?(?:(?!(?:crash|bug|error|wrong|regression|npe|fault|defect|leak|race|deadlock)\w*\b)\w+\s+)?(docs?|documentation|docstrings?|readme|changelog|changes|comments?|links?|urls?|examples?|tutorial|copyright|license|headers?|javadoc|jsdoc)\b
 - \bfix(e[sd]|ing)?\s+(a\s+|the\s+)?(ci|build|travis|appveyor|github actions|workflow|tests? names?|coverage|release|version)\b

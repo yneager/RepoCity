@@ -1,0 +1,49 @@
+repo,variant,bugfix_commits,fixes_with_links,links,introducing_commits
+flask,B-SZZ,502,278,1902,788
+flask,+ws/comments,502,270,1849,755
+flask,+large commits,502,272,1373,644
+flask,+both (default),502,264,1284,603
+requests,B-SZZ,510,363,1973,996
+requests,+ws/comments,510,358,1854,935
+requests,+large commits,510,359,1863,959
+requests,+both (default),510,355,1732,901
+click,B-SZZ,347,255,1126,470
+click,+ws/comments,347,254,1065,442
+click,+large commits,347,255,1093,469
+click,+both (default),347,254,1029,441
+werkzeug,B-SZZ,871,736,3979,1506
+werkzeug,+ws/comments,871,733,3916,1462
+werkzeug,+large commits,871,720,3394,1422
+werkzeug,+both (default),871,717,3341,1378
+express,B-SZZ,509,402,2624,1326
+express,+ws/comments,509,390,2398,1220
+express,+large commits,509,396,2155,1204
+express,+both (default),509,384,1957,1096
+axios,B-SZZ,606,407,2534,651
+axios,+ws/comments,606,404,2509,641
+axios,+large commits,606,364,1307,475
+axios,+both (default),606,375,1294,480
+moment,B-SZZ,583,488,4526,1181
+moment,+ws/comments,583,477,4079,1126
+moment,+large commits,583,370,1118,636
+moment,+both (default),583,368,1130,633
+mocha,B-SZZ,749,511,3645,1039
+mocha,+ws/comments,749,505,3455,1009
+mocha,+large commits,749,477,2088,841
+mocha,+both (default),749,478,2024,818
+commons-lang,B-SZZ,1244,898,4853,1865
+commons-lang,+ws/comments,1244,677,3094,1374
+commons-lang,+large commits,1244,877,4008,1796
+commons-lang,+both (default),1244,653,2654,1336
+commons-io,B-SZZ,611,450,3041,1208
+commons-io,+ws/comments,611,370,2380,979
+commons-io,+large commits,611,439,2053,1032
+commons-io,+both (default),611,357,1497,796
+jsoup,B-SZZ,630,524,2432,842
+jsoup,+ws/comments,630,502,2225,793
+jsoup,+large commits,630,524,2432,842
+jsoup,+both (default),630,502,2225,793
+gson,B-SZZ,463,297,2529,769
+gson,+ws/comments,463,277,2290,734
+gson,+large commits,463,276,1538,638
+gson,+both (default),463,263,1370,588

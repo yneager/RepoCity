@@ -1,0 +1,5 @@
+{
+ "status": "pending",
+ "n_sampled": 100,
+ "message": "No manual labels yet: fill in manual_is_bugfix (1/0) in experiments/spotcheck/bugfix_spotcheck.csv."
+}

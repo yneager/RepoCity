@@ -8,8 +8,8 @@ import shutil
 import time
 
 import pandas as pd
-from common import RESULTS, ROOT, load_experiment, load_repos, model_config
 
+from common import RESULTS, ROOT, load_experiment, load_repos, model_config
 from repocity.api.jobs import slugify
 from repocity.models.train import Predictor
 from repocity.pipeline.analyze import load_repo_data

@@ -18,11 +18,3 @@ testpaths = ["tests"]
 timeout = 600
 addopts = "-q"
 filterwarnings = ["ignore::DeprecationWarning", "ignore:.*httpx.*"]
-
-[tool.ruff]
-line-length = 110
-target-version = "py312"
-
-[tool.ruff.lint]
-select = ["E", "F", "W", "I", "B", "UP"]
-ignore = ["E501", "B008", "B905"]

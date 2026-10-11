@@ -77,14 +77,15 @@ function CameraRig({ size }: { size: number }) {
   const controls = useRef<CameraControls>(null)
   const flyNonce = useCity((s) => s.flyNonce)
   const selected = useCity((s) => s.selected)
-  const resetNonce = useCity((s) => s.analysisId)
+  const analysisId = useCity((s) => s.analysisId)
+  const resetNonce = useCity((s) => s.resetNonce)
 
   useEffect(() => {
     const c = controls.current
     if (!c) return
     const mid = size / 2
-    void c.setLookAt(mid + size * 0.58, size * 0.86, mid + size * 1.2, mid - size * 0.04, 0, mid + size * 0.04, false)
-  }, [size, resetNonce])
+    void c.setLookAt(mid + size * 0.58, size * 0.86, mid + size * 1.2, mid - size * 0.04, 0, mid + size * 0.04, resetNonce > 0)
+  }, [size, analysisId, resetNonce])
 
   useEffect(() => {
     const c = controls.current
@@ -180,6 +181,28 @@ function initialQuality(): 'auto' | 'high' | 'low' {
   return q === 'high' || q === 'low' ? q : 'auto'
 }
 
+function ResetViewButton() {
+  const resetView = useCity((s) => s.resetView)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement).tagName === 'INPUT' || e.ctrlKey || e.metaKey) return
+      if (e.key === 'r' || e.key === 'R') resetView()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [resetView])
+  return (
+    <button
+      onClick={resetView}
+      className="absolute left-[296px] top-3 rounded-lg border border-slate-700/70 bg-slate-900/80 px-2.5 py-1.5 text-[12px] text-slate-300 backdrop-blur hover:border-sky-400/50 hover:text-white"
+      title="Reset camera (R)"
+      data-testid="reset-view"
+    >
+      Reset view
+    </button>
+  )
+}
+
 export function CityScene(props: Props) {
   const labelDistricts = useMemo(() => pickLabelDistricts(props.layout.districts), [props.layout])
   const setHovered = useCity((s) => s.setHovered)
@@ -189,7 +212,7 @@ export function CityScene(props: Props) {
   return (
     <div className="absolute inset-0" data-testid="city-canvas">
       <Canvas
-        shadows
+        shadows="percentage"
         dpr={lowQuality ? 1 : [1, 1.75]}
         camera={{ fov: 45, near: 1, far: props.layout.size * 20, position: [1500, 800, 1500] }}
         gl={{ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true }}
@@ -204,6 +227,7 @@ export function CityScene(props: Props) {
         </div>
       )}
       <LabelLayer districts={labelDistricts} />
+      <ResetViewButton />
     </div>
   )
 }

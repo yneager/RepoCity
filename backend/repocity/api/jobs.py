@@ -9,8 +9,10 @@ pre-analysed demo bundles in ``demo/cache``.
 
 from __future__ import annotations
 
+import json
 import re
-import shutil
+import subprocess
+import sys
 import threading
 import time
 import traceback
@@ -18,10 +20,17 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from repocity import config
-from repocity.ingest.gitutil import GitError, clone, remote_head, repo_size_mb, run_git, validate_url
-from repocity.pipeline.analyze import STEPS, ingest, make_predictor
-from repocity.pipeline.export import export_bundle, read_json
-from repocity.store.db import Store
+from repocity.ingest.gitutil import (
+    GitError,
+    clone,
+    remote_head,
+    repo_size_mb,
+    rmtree_force,
+    run_git,
+    validate_url,
+)
+from repocity.pipeline.analyze import STEPS
+from repocity.pipeline.export import read_json
 
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{0,120}$")
 STEP_WEIGHTS = {"clone": 0.15, "history": 0.15, "snapshots": 0.2, "szz": 0.2, "model": 0.2, "layout": 0.1}
@@ -154,11 +163,11 @@ class JobManager:
                 job.emit("layout", 1.0, "Analysis complete", kind="done")
             except Exception as exc:  # report every failure to the client
                 job.status = "error"
-                job.error = str(exc) if isinstance(exc, (GitError, ValueError)) else f"{type(exc).__name__}: {exc}"
+                job.error = str(exc) if isinstance(exc, (GitError, ValueError, RuntimeError)) else f"{type(exc).__name__}: {exc}"
                 job.emit("clone", 0.0, job.error, kind="error")
                 traceback.print_exc()
             finally:
-                shutil.rmtree(clone_dir, ignore_errors=True)
+                rmtree_force(clone_dir)
 
     def _analyse(self, job: Job, head: str, work: Path, clone_dir: Path) -> None:
         assert job.url
@@ -174,18 +183,32 @@ class JobManager:
             job.warnings.append(f"Large repository ({n} commits): analysis may take several minutes.")
             job.emit("clone", 1.0, job.warnings[-1], kind="warning")
         job.emit("clone", 1.0, f"Cloned ({size:.0f} MB, {n} first-parent commits)")
-        work.mkdir(parents=True, exist_ok=True)
-        store_path = work / "store.duckdb"
-        if store_path.exists():
-            store_path.unlink()
-        ingest(clone_dir, store_path, head, szz_modes=("w",), progress=job.emit)
-        job.emit("model", 0.0, "Training models at each cutoff")
-        with Store(store_path) as st:
-            predictor = make_predictor(st)
-        bundle = work / "bundle"
-        shutil.rmtree(bundle, ignore_errors=True)
-        export_bundle(
-            predictor, bundle, repo_id=job.id, name=job.name, url=job.url, head=head,
-            progress=job.emit, extra_meta={"warnings": job.warnings},
+        # The heavy part runs in a worker process (see repocity/pipeline/worker.py).
+        args = {"url": job.url, "head": head, "id": job.id, "name": job.name, "work": str(work),
+                "clone_dir": str(clone_dir), "warnings": job.warnings}
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "repocity.pipeline.worker", json.dumps(args)],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace",
+            cwd=str(Path(__file__).resolve().parents[2]),
         )
+        bundle = None
+        fatal = None
+        assert proc.stdout is not None
+        for line in proc.stdout:
+            try:
+                msg = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if msg["kind"] in ("progress", "warning"):
+                job.emit(msg["step"], msg["f"], msg["message"], kind=msg["kind"])
+            elif msg["kind"] == "result":
+                bundle = Path(msg["bundle"])
+            elif msg["kind"] == "fatal":
+                fatal = msg["message"]
+        stderr = proc.stderr.read() if proc.stderr else ""
+        proc.wait()
+        if proc.returncode != 0 or bundle is None:
+            if stderr:
+                print(stderr, file=sys.stderr)
+            raise RuntimeError(fatal or f"analysis worker exited with code {proc.returncode}")
         job.bundle = bundle

@@ -91,33 +91,33 @@
  },
  {
   "repo": "gson",
-  "ingest_seconds": 34.676832700002706,
+  "ingest_seconds": 23.335574600001564,
   "steps": {
-   "history": 17.415292799996678,
-   "bugfix": 0.20576740000251448,
-   "szz": 16.756938499995158
+   "history": 11.639861300005578,
+   "bugfix": 0.13052720000268891,
+   "szz": 11.407381299999543
   },
   "commits": 2058,
   "file_identities": 532,
   "files_last": 264,
-  "bugfix_commits": 590,
-  "wall_seconds": 36.995370699994965,
-  "peak_rss_mb": 1637.31456
+  "bugfix_commits": 463,
+  "wall_seconds": 24.906663399997342,
+  "peak_rss_mb": 1639.636992
  },
  {
   "repo": "jsoup",
-  "ingest_seconds": 25.288476699999592,
+  "ingest_seconds": 24.05606429999898,
   "steps": {
-   "history": 11.298210100001597,
-   "bugfix": 0.12591329999850132,
-   "szz": 13.633478900002956
+   "history": 11.909263699999428,
+   "bugfix": 0.14330519999930402,
+   "szz": 11.870921499998076
   },
   "commits": 2362,
   "file_identities": 273,
   "files_last": 205,
-  "bugfix_commits": 760,
-  "wall_seconds": 26.943532299999788,
-  "peak_rss_mb": 1664.892928
+  "bugfix_commits": 630,
+  "wall_seconds": 25.585778499997105,
+  "peak_rss_mb": 1664.114688
  },
  {
   "repo": "mocha",

@@ -39,7 +39,7 @@ DEFAULT_EXCLUDES = [
     # listed first because exclusions are applied in order
     r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|more\s+)?(pmd|checkstyle|spotbugs|findbugs|sonar\w*|errorprone|error[- ]prone|lint|eslint|tslint|jshint|jscs|prettier|compiler|javac|deprecations?|deprecated|raw\s?types?|generics?|static analysis|code\s?style|codestyle)"
     r"(\s+(issues?|errors?|warnings?|violations?|complaints?|problems?|findings?))?\b",
-    r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|more\s+)?warnings?\b",
+    r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|more\s+)?" + _W + r"warnings?\b",
     r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+|minor\s+|small\s+)?" + _W
     + r"(typos?|spelling|grammar|wording|whitespace|indent(ation)?|formatting|format|style|lint(ing)?|pep\s?8|flake8|mypy|typing|type hints?|annotations?|imports?)\b",
     r"\bfix(e[sd]|ing)?\s+(a\s+|the\s+|some\s+|all\s+)?" + _W

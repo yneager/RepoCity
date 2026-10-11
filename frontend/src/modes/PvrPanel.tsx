@@ -120,8 +120,8 @@ function ScoreCardView({ prediction, k, onHide }: { prediction: Prediction; k: n
         <thead>
           <tr className="text-[11px] text-slate-500">
             <th className="pb-1 text-left font-medium">Metric</th>
-            <th className="pb-1 text-right font-medium">{prediction.model === 'lightgbm' ? 'LightGBM' : 'Hotspot*'}</th>
-            <th className="pb-1 text-right font-medium">Hotspot</th>
+            <th className="pb-1 pl-2 text-right font-medium">{prediction.model === 'lightgbm' ? 'LightGBM' : 'Hotspot*'}</th>
+            <th className="pb-1 pl-3 text-right font-medium">Hotspot</th>
           </tr>
         </thead>
         <tbody>
@@ -129,7 +129,7 @@ function ScoreCardView({ prediction, k, onHide }: { prediction: Prediction; k: n
             <tr key={r.label} className="border-t border-slate-800">
               <td className="py-1.5 text-slate-300">{r.label}</td>
               <td className={`py-1.5 text-right tabular-nums ${r.better > 0 ? 'font-semibold text-emerald-300' : 'text-slate-200'}`} data-testid={`card-model-${r.testid}`}>{r.a}</td>
-              <td className={`py-1.5 text-right tabular-nums ${r.better < 0 ? 'font-semibold text-emerald-300' : 'text-slate-400'}`} data-testid={`card-hotspot-${r.testid}`}>{r.b}</td>
+              <td className={`py-1.5 pl-3 text-right tabular-nums ${r.better < 0 ? 'font-semibold text-emerald-300' : 'text-slate-400'}`} data-testid={`card-hotspot-${r.testid}`}>{r.b}</td>
             </tr>
           ))}
         </tbody>

@@ -1,9 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const here = path.dirname(fileURLToPath(import.meta.url))
 
 // End-to-end: home -> demo city -> timeline -> hover/click -> search -> encodings -> Prediction vs Reality.
 // Screenshots are written to docs/screenshots for the report and README.
-const SHOTS = path.resolve(__dirname, '..', '..', 'docs', 'screenshots')
+const SHOTS = path.resolve(here, '..', '..', 'docs', 'screenshots')
 const shot = (page: Page, name: string) => page.screenshot({ path: path.join(SHOTS, `${name}.png`) })
 
 async function settle(page: Page, ms = 1800) {
@@ -87,7 +90,8 @@ test('demo city: timeline, picking, search, encodings', async ({ page }) => {
   await shot(page, '07-search-fly-to')
   await page.getByTestId('file-panel-close').click()
 
-  // encodings
+  // encodings (back to the overview first)
+  await page.getByTestId('reset-view').click()
   await page.getByTestId('height-complexity').click()
   await page.getByTestId('color-authors').click()
   await settle(page)

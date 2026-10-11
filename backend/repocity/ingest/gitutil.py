@@ -72,10 +72,25 @@ def remote_head(url: str, timeout: float = 60) -> str:
     return out.split()[0]
 
 
+def rmtree_force(path: Path) -> None:
+    """Delete a directory tree, including git's read-only object files (needed on Windows)."""
+    import stat
+
+    def on_error(func, p, _exc):
+        try:
+            os.chmod(p, stat.S_IWRITE)
+            func(p)
+        except OSError:
+            pass
+
+    if Path(path).exists():
+        shutil.rmtree(path, onexc=on_error)
+
+
 def clone(url: str, dest: Path, timeout: float, rev: str | None = None) -> None:
     """Full-history, single-branch, no-checkout clone (blobs are needed for blame + metrics)."""
     if dest.exists():
-        shutil.rmtree(dest, ignore_errors=True)
+        rmtree_force(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     run_git(None, ["clone", "--quiet", "--no-checkout", "--single-branch", url, str(dest)], timeout=timeout)
     if rev:

@@ -1,8 +1,11 @@
 import { defineConfig } from '@playwright/test'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const here = path.dirname(fileURLToPath(import.meta.url))
 
 // Starts the backend (serving the offline demo cache) and the frontend, then runs e2e/*.spec.ts.
-const root = path.resolve(__dirname, '..')
+const root = path.resolve(here, '..')
 const venvPython = process.platform === 'win32' ? path.join(root, '.venv', 'Scripts', 'python.exe') : path.join(root, '.venv', 'bin', 'python')
 const python = process.env.PYTHON ?? venvPython
 const apiPort = Number(process.env.E2E_API_PORT ?? 8011)

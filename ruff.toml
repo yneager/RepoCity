@@ -1,0 +1,9 @@
+# Shared lint settings for backend/ and experiments/ (CI runs `ruff check .` from the repo root).
+line-length = 110
+target-version = "py312"
+src = ["backend", "experiments"]
+extend-exclude = ["frontend", "data", ".venv"]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501", "B008", "B905", "E402"]

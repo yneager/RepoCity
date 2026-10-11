@@ -1,0 +1,13 @@
+repo,language,cutoffs,first_cutoff,last_cutoff,files,positives,train_rows,positive rate
+axios,JavaScript/TypeScript,6,2023-10,2026-04,168.3,30.5,442.3,18.1%
+click,Python,6,2023-10,2026-04,61.0,15.5,183.2,25.4%
+commons-io,Java,6,2023-10,2026-04,515.8,33.3,1472.2,6.5%
+commons-lang,Java,6,2023-10,2026-04,509.3,46.3,1462.8,9.1%
+express,JavaScript,6,2023-10,2026-04,142.0,8.5,427.5,6.0%
+flask,Python,6,2023-10,2026-04,82.5,10.2,243.3,12.3%
+gson,Java,6,2023-10,2026-04,256.7,41.0,735.5,16.0%
+jsoup,Java,6,2023-10,2026-04,164.8,47.2,446.3,28.6%
+mocha,JavaScript,6,2023-10,2026-04,423.2,19.5,1235.2,4.6%
+moment,JavaScript,6,2023-10,2026-04,619.0,13.8,1851.0,2.2%
+requests,Python,6,2023-09,2026-03,35.8,2.7,106.5,7.4%
+werkzeug,Python,6,2023-10,2026-04,139.0,16.8,410.5,12.1%

@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from common import RESULTS, load_experiment, load_repos, model_config
 
+from common import RESULTS, load_experiment, load_repos, model_config
 from repocity.config import SZZConfig
 from repocity.models.evaluation import evaluate_ranking
 from repocity.models.features import FEATURE_GROUPS, FEATURES
