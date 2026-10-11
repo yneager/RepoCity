@@ -2,8 +2,8 @@
 
 | SZZ variant | Links (fix, file, intro) | Distinct introducing commits | Fixes with ≥1 link | LightGBM Recall@20%LOC | LightGBM ROC-AUC |
 |---|---|---|---|---|---|
-| B-SZZ | 35164 | 12641 | 73.6% | 0.181 | 0.781 |
-| +ws/comments | 31114 | 11470 | 68.4% | 0.179 | 0.786 |
-| +large commits | 24422 | 10958 | 69.9% | 0.179 | 0.783 |
-| +both (default) | 21537 | 9863 | 65.2% | 0.180 | 0.785 |
+| B-SZZ | 35081 | 12634 | 73.6% | 0.180 | 0.782 |
+| +ws/comments | 31040 | 11462 | 68.4% | 0.185 | 0.786 |
+| +large commits | 24349 | 10949 | 69.9% | 0.181 | 0.783 |
+| +both (default) | 21473 | 9853 | 65.2% | 0.183 | 0.786 |
 | issue-date filter | not applicable | no issue-tracker dates (no external APIs) |  |  |  |

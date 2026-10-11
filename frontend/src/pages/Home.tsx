@@ -190,7 +190,7 @@ function HeroBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] overflow-hidden" aria-hidden>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_0%,rgba(56,189,248,0.16),transparent_55%),radial-gradient(ellipse_at_20%_10%,rgba(244,63,94,0.10),transparent_50%)]" />
-      <svg className="absolute bottom-0 right-0 h-[260px] w-[1700px] opacity-50" viewBox="0 0 1700 260" preserveAspectRatio="xMaxYMax slice">
+      <svg className="absolute bottom-0 right-0 h-[180px] w-[1700px] opacity-35" viewBox="0 0 1700 260" preserveAspectRatio="xMaxYMax slice">
         {bars.map((b) => (
           <rect key={b.x} x={b.x} y={260 - b.h} width={20} height={b.h} rx={2} fill={b.hue} />
         ))}

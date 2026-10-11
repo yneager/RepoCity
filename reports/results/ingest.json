@@ -1,182 +1,182 @@
 [
  {
   "repo": "axios",
-  "ingest_seconds": 20.870737299999746,
+  "ingest_seconds": 20.90432690000307,
   "steps": {
-   "history": 7.854315500000666,
-   "bugfix": 0.07009420000395039,
-   "szz": 12.829539099999238
+   "history": 7.943554600002244,
+   "bugfix": 0.08408169999893289,
+   "szz": 12.760860400005186
   },
   "commits": 1893,
   "file_identities": 397,
   "files_last": 264,
   "bugfix_commits": 606,
-  "wall_seconds": 22.418526699999347,
-  "peak_rss_mb": 1557.123072
+  "wall_seconds": 22.453612500001327,
+  "peak_rss_mb": 1557.131264
  },
  {
   "repo": "click",
-  "ingest_seconds": 10.92428469999868,
+  "ingest_seconds": 10.757390499995381,
   "steps": {
-   "history": 6.158866099998704,
-   "bugfix": 0.057858699998178054,
-   "szz": 4.613394699998025
+   "history": 5.911769900005311,
+   "bugfix": 0.07332680000399705,
+   "szz": 4.665253400002257
   },
   "commits": 1384,
   "file_identities": 111,
   "files_last": 91,
   "bugfix_commits": 347,
-  "wall_seconds": 12.553558300001896,
-  "peak_rss_mb": 1585.152
+  "wall_seconds": 12.297439099995245,
+  "peak_rss_mb": 1580.638208
  },
  {
   "repo": "commons-io",
-  "ingest_seconds": 40.23409349999565,
+  "ingest_seconds": 40.02540009999939,
   "steps": {
-   "history": 22.14493510000466,
-   "bugfix": 0.1764208000022336,
-   "szz": 17.66743239999778
+   "history": 22.007753700003377,
+   "bugfix": 0.1700667000040994,
+   "szz": 17.60821969999961
   },
   "commits": 5844,
   "file_identities": 657,
   "files_last": 556,
-  "bugfix_commits": 611,
-  "wall_seconds": 41.94364240000141,
-  "peak_rss_mb": 1765.261312
+  "bugfix_commits": 607,
+  "wall_seconds": 41.61746999999741,
+  "peak_rss_mb": 1760.78848
  },
  {
   "repo": "commons-lang",
-  "ingest_seconds": 91.38403399999515,
+  "ingest_seconds": 88.73505070000101,
   "steps": {
-   "history": 52.763170700003684,
-   "bugfix": 0.3205551999999443,
-   "szz": 37.952757699997164
+   "history": 50.97877960000187,
+   "bugfix": 0.31999449999420904,
+   "szz": 37.10938950000127
   },
   "commits": 9397,
   "file_identities": 1125,
   "files_last": 628,
-  "bugfix_commits": 1244,
-  "wall_seconds": 93.00082899999688,
-  "peak_rss_mb": 1886.134272
+  "bugfix_commits": 1241,
+  "wall_seconds": 90.30616649999865,
+  "peak_rss_mb": 1869.254656
  },
  {
   "repo": "express",
-  "ingest_seconds": 20.93905680000171,
+  "ingest_seconds": 21.2727956000017,
   "steps": {
-   "history": 11.14104220000445,
-   "bugfix": 0.11690970000199741,
-   "szz": 9.536960700002965
+   "history": 11.145455500001844,
+   "bugfix": 0.08800779999728547,
+   "szz": 9.913852799996675
   },
   "commits": 3911,
   "file_identities": 356,
   "files_last": 141,
   "bugfix_commits": 509,
-  "wall_seconds": 22.55220410000038,
-  "peak_rss_mb": 1554.333696
+  "wall_seconds": 22.703118400000676,
+  "peak_rss_mb": 1550.90944
  },
  {
   "repo": "flask",
-  "ingest_seconds": 13.777028899996367,
+  "ingest_seconds": 14.044960300001549,
   "steps": {
-   "history": 6.748238899999706,
-   "bugfix": 0.08076380000420613,
-   "szz": 6.831460100002005
+   "history": 6.890133000000787,
+   "bugfix": 0.1033300999988569,
+   "szz": 6.949221900002158
   },
   "commits": 2280,
   "file_identities": 170,
   "files_last": 83,
-  "bugfix_commits": 502,
-  "wall_seconds": 15.4883045999959,
-  "peak_rss_mb": 1591.267328
+  "bugfix_commits": 501,
+  "wall_seconds": 15.652008000004571,
+  "peak_rss_mb": 1589.223424
  },
  {
   "repo": "gson",
-  "ingest_seconds": 23.335574600001564,
+  "ingest_seconds": 23.567132199998014,
   "steps": {
-   "history": 11.639861300005578,
-   "bugfix": 0.13052720000268891,
-   "szz": 11.407381299999543
+   "history": 11.76624680000532,
+   "bugfix": 0.09241189999738708,
+   "szz": 11.530661599994346
   },
   "commits": 2058,
   "file_identities": 532,
   "files_last": 264,
-  "bugfix_commits": 463,
-  "wall_seconds": 24.906663399997342,
-  "peak_rss_mb": 1639.636992
+  "bugfix_commits": 456,
+  "wall_seconds": 25.184966599998006,
+  "peak_rss_mb": 1636.081664
  },
  {
   "repo": "jsoup",
-  "ingest_seconds": 24.05606429999898,
+  "ingest_seconds": 23.769095800002106,
   "steps": {
-   "history": 11.909263699999428,
-   "bugfix": 0.14330519999930402,
-   "szz": 11.870921499998076
+   "history": 11.754961899998307,
+   "bugfix": 0.0935546000036993,
+   "szz": 11.79262220000237
   },
   "commits": 2362,
   "file_identities": 273,
   "files_last": 205,
-  "bugfix_commits": 630,
-  "wall_seconds": 25.585778499997105,
-  "peak_rss_mb": 1664.114688
+  "bugfix_commits": 628,
+  "wall_seconds": 25.368187599997327,
+  "peak_rss_mb": 1666.29376
  },
  {
   "repo": "mocha",
-  "ingest_seconds": 24.73536299999978,
+  "ingest_seconds": 24.514759400000912,
   "steps": {
-   "history": 12.425315099993895,
-   "bugfix": 0.12579689999984112,
-   "szz": 11.98809220000112
+   "history": 12.237742599994817,
+   "bugfix": 0.08474520000163466,
+   "szz": 11.986503200001607
   },
   "commits": 3142,
   "file_identities": 613,
   "files_last": 478,
-  "bugfix_commits": 749,
-  "wall_seconds": 26.33336839999538,
-  "peak_rss_mb": 1603.751936
+  "bugfix_commits": 747,
+  "wall_seconds": 26.15731919999962,
+  "peak_rss_mb": 1600.356352
  },
  {
   "repo": "moment",
-  "ingest_seconds": 31.035526699997718,
+  "ingest_seconds": 30.89062749999721,
   "steps": {
-   "history": 15.562031900000875,
-   "bugfix": 0.06630929999664659,
-   "szz": 15.170249399998283
+   "history": 15.420118499998352,
+   "bugfix": 0.05775849999918137,
+   "szz": 15.127524900002754
   },
   "commits": 1763,
   "file_identities": 832,
   "files_last": 634,
   "bugfix_commits": 583,
-  "wall_seconds": 32.74351749999914,
-  "peak_rss_mb": 1627.262976
+  "wall_seconds": 32.491895099999965,
+  "peak_rss_mb": 1629.483008
  },
  {
   "repo": "requests",
-  "ingest_seconds": 13.210653499998443,
+  "ingest_seconds": 13.393714899997576,
   "steps": {
-   "history": 6.850079099996947,
-   "bugfix": 0.07755420000466984,
-   "szz": 6.168760300002759
+   "history": 6.944594799999322,
+   "bugfix": 0.0789948000019649,
+   "szz": 6.257032499997877
   },
   "commits": 2669,
   "file_identities": 274,
   "files_last": 37,
   "bugfix_commits": 510,
-  "wall_seconds": 14.888247400005639,
-  "peak_rss_mb": 1583.304704
+  "wall_seconds": 14.910443000000669,
+  "peak_rss_mb": 1581.101056
  },
  {
   "repo": "werkzeug",
-  "ingest_seconds": 28.324958800003515,
+  "ingest_seconds": 28.476900099994964,
   "steps": {
-   "history": 11.075152199999138,
-   "bugfix": 0.1560542000006535,
-   "szz": 16.952920800002175
+   "history": 11.057118400000036,
+   "bugfix": 0.1327501999985543,
+   "szz": 17.149749500000325
   },
   "commits": 3130,
   "file_identities": 291,
   "files_last": 143,
-  "bugfix_commits": 871,
-  "wall_seconds": 29.992297199998575,
-  "peak_rss_mb": 1649.569792
+  "bugfix_commits": 870,
+  "wall_seconds": 29.92712649999885,
+  "peak_rss_mb": 1644.662784
  }
 ]

@@ -18,6 +18,7 @@ async function openDemo(page: Page) {
   await page.goto('/')
   const card = page.locator('[data-testid^="demo-pallets-flask"]')
   await expect(card).toBeVisible()
+  await page.waitForTimeout(600) // let the hero fade-in finish
   await shot(page, '01-home')
   await card.click()
   await expect(page.getByTestId('city-view')).toHaveAttribute('data-ready', 'true')

@@ -2,24 +2,24 @@
  {
   "repo": "flask",
   "id": "pallets-flask-d086db85",
-  "bundle_mb": 0.480368,
-  "export_seconds": 7.482260499993572,
+  "bundle_mb": 0.480366,
+  "export_seconds": 7.050159899998107,
   "scorecard_values_checked": 384,
   "scorecard_mismatches": 0
  },
  {
   "repo": "express",
   "id": "expressjs-express-a419aa73",
-  "bundle_mb": 0.774109,
-  "export_seconds": 8.207218600000488,
+  "bundle_mb": 0.77411,
+  "export_seconds": 8.144251500001701,
   "scorecard_values_checked": 368,
   "scorecard_mismatches": 0
  },
  {
   "repo": "jsoup",
   "id": "jhy-jsoup-088614f4",
-  "bundle_mb": 0.665068,
-  "export_seconds": 8.875623100000666,
+  "bundle_mb": 0.664935,
+  "export_seconds": 8.321278199997323,
   "scorecard_values_checked": 384,
   "scorecard_mismatches": 0
  }
