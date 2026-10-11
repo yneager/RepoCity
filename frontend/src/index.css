@@ -12,24 +12,73 @@
   --color-accent: #38bdf8;
   --color-risk: #ef4444;
   --animate-shimmer: shimmer 1.6s linear infinite;
-  --animate-fade-in: fade-in 0.25s ease-out both;
-  --animate-slide-in: slide-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  @keyframes shimmer {
-    0% { background-position: -400px 0; }
-    100% { background-position: 400px 0; }
-  }
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: none; }
-  }
-  @keyframes slide-in {
-    from { opacity: 0; transform: translateX(24px); }
-    to { opacity: 1; transform: none; }
-  }
+  --animate-fade-in: fade-in calc(var(--motion, 1) * 700ms + 1ms) cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in: slide-in calc(var(--motion, 1) * 800ms + 1ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-slide-left: slide-left calc(var(--motion, 1) * 800ms + 1ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-rise: rise calc(var(--motion, 1) * 900ms + 1ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-pop: pop calc(var(--motion, 1) * 450ms + 1ms) cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(32px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slide-left {
+  from { opacity: 0; transform: translateX(-32px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
 }
 
 :root {
   color-scheme: dark;
+  /* 1 = cinematic, 0.6 = smooth, 0 = reduced; set from the Motion setting */
+  --motion: 1;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: calc(var(--motion) * 300ms + 1ms);
+  --dur: calc(var(--motion) * 600ms + 1ms);
+  --dur-slow: calc(var(--motion) * 1100ms + 1ms);
+}
+
+/* every interactive surface eases its colour/border/shadow changes */
+button,
+a,
+input,
+select,
+.panel {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: var(--dur);
+  transition-timing-function: var(--ease-out);
+}
+
+/* staggered children: style="--i: n" */
+.stagger > * {
+  animation: rise calc(var(--motion) * 900ms + 1ms) var(--ease-out) both;
+  animation-delay: calc(var(--motion) * var(--i, 0) * 70ms);
+}
+
+.page {
+  animation: fade-in calc(var(--motion) * 700ms + 1ms) var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion: 0;
+  }
 }
 
 html,
@@ -67,7 +116,7 @@ body {
 .skeleton {
   background: linear-gradient(90deg, rgb(30 41 59 / 0.6) 0px, rgb(51 65 85 / 0.7) 80px, rgb(30 41 59 / 0.6) 160px);
   background-size: 800px 100%;
-  animation: var(--animate-shimmer);
+  animation: shimmer 1.6s linear infinite;
   border-radius: 8px;
 }
 
@@ -86,6 +135,12 @@ body {
   text-overflow: ellipsis;
   will-change: transform, opacity;
   text-shadow: 0 1px 2px rgb(0 0 0 / 0.8);
+}
+
+.district-label--active {
+  color: #e0f2fe;
+  background: rgb(14 116 144 / 0.55);
+  box-shadow: 0 0 0 1px rgb(56 189 248 / 0.5);
 }
 
 .district-label--top {
@@ -109,7 +164,12 @@ body {
   font-size: 12.5px;
   font-weight: 500;
   color: rgb(148 163 184);
-  transition: background 0.15s, color 0.15s;
+  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+
+.seg button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .seg button:hover {
@@ -172,4 +232,42 @@ select:focus-visible,
 a:focus-visible {
   outline: 2px solid #38bdf8;
   outline-offset: 2px;
+}
+
+.tooltip-enter {
+  animation: pop calc(var(--motion) * 260ms + 1ms) var(--ease-out) both;
+}
+
+.kbd {
+  display: inline-flex;
+  min-width: 22px;
+  justify-content: center;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid rgb(148 163 184 / 0.3);
+  border-bottom-width: 2px;
+  background: rgb(15 23 42);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.bar-fill {
+  transition: width var(--dur-slow) var(--ease-out), background-color var(--dur) var(--ease-out);
+}
+
+.curve-path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw calc(var(--motion) * 1800ms + 1ms) var(--ease-out) forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.backdrop {
+  animation: fade-in calc(var(--motion) * 400ms + 1ms) ease-out both;
 }

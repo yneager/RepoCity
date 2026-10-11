@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api, type JobSummary, type ProgressEvent } from '../api'
 import { navigate } from '../router'
-import { Icon, Logo, Spinner } from '../ui'
+import { AnimatedNumber, Icon, Logo, Spinner } from '../ui'
 
 const STEPS: { id: string; label: string; help: string }[] = [
   { id: 'clone', label: 'Clone', help: 'Full history clone of the default branch' },
@@ -16,6 +16,7 @@ export function Progress({ id }: { id: string }) {
   const [events, setEvents] = useState<ProgressEvent[]>([])
   const [job, setJob] = useState<JobSummary | null>(null)
   const [lost, setLost] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
   const logRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export function Progress({ id }: { id: string }) {
   const warnings = events.filter((e) => e.kind === 'warning')
 
   return (
-    <div className="flex h-full flex-col items-center overflow-y-auto px-8 py-14">
+    <div className="page flex h-full flex-col items-center overflow-y-auto px-8 py-14">
       <div className="flex w-full max-w-3xl items-center gap-3">
         <button onClick={() => navigate({ page: 'home' })} className="flex items-center gap-3" aria-label="Back to home">
           <Logo size={30} />
@@ -63,11 +64,26 @@ export function Progress({ id }: { id: string }) {
             <div className="mt-1 text-[20px] font-semibold text-white">{job?.name ?? id}</div>
             {job?.url && <div className="text-[13px] text-slate-400">{job.url}</div>}
           </div>
-          <div className="text-[28px] font-semibold tabular-nums text-sky-300">{Math.round(progress * 100)}%</div>
+          <div className="flex items-center gap-4">
+            {!failed && last?.kind !== 'done' && (
+              <button
+                onClick={() => {
+                  setCancelling(true)
+                  api.cancel(id).catch(() => setCancelling(false))
+                }}
+                disabled={cancelling}
+                className="rounded-lg border border-slate-700 px-3 py-1.5 text-[12.5px] text-slate-300 hover:border-rose-400/60 hover:text-rose-200 disabled:opacity-50"
+                data-testid="cancel-analysis"
+              >
+                {cancelling ? 'Cancelling…' : 'Cancel'}
+              </button>
+            )}
+            <AnimatedNumber value={Math.round(progress * 100)} format={(v) => `${Math.round(v)}%`} className="text-[28px] font-semibold tabular-nums text-sky-300" />
+          </div>
         </div>
         <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-800" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
           <div
-            className={`h-full rounded-full transition-[width] duration-500 ${failed ? 'bg-rose-500' : 'bg-gradient-to-r from-sky-400 to-emerald-400'}`}
+            className={`relative h-full overflow-hidden rounded-full transition-[width] duration-[1200ms] ease-out ${failed ? 'bg-rose-500' : 'bg-gradient-to-r from-sky-400 to-emerald-400'}`}
             style={{ width: `${Math.max(2, progress * 100)}%` }}
           />
         </div>

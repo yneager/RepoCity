@@ -1,4 +1,5 @@
-import type { ReactNode, SVGProps } from 'react'
+import { useEffect, useRef, useState, type ReactNode, type SVGProps } from 'react'
+import { MOTION, easeOutCubic, useSettings } from './motion'
 
 type IconProps = SVGProps<SVGSVGElement> & { size?: number }
 
@@ -77,6 +78,69 @@ export const Icon = {
       <path d="m5 12.5 4.5 4.5L19 7" />
     </Svg>
   ),
+  Gear: (p: IconProps) => (
+    <Svg {...p}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+    </Svg>
+  ),
+  Camera: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </Svg>
+  ),
+  Orbit: (p: IconProps) => (
+    <Svg {...p}>
+      <ellipse cx="12" cy="12" rx="9.5" ry="4" />
+      <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
+      <circle cx="20" cy="10.5" r="1.3" fill="currentColor" stroke="none" />
+    </Svg>
+  ),
+  Recenter: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4" />
+      <circle cx="12" cy="12" r="2.5" />
+    </Svg>
+  ),
+  Keyboard: (p: IconProps) => (
+    <Svg {...p}>
+      <rect x="2.5" y="6" width="19" height="12" rx="2" />
+      <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10" />
+    </Svg>
+  ),
+  Flame: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 .8-3.3 2-4.5.3 1.6 1 2.5 2 3 0-3.2.4-5.8 1-8.5z" />
+    </Svg>
+  ),
+  Folder: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+    </Svg>
+  ),
+  ChevronLeft: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="m15 5-7 7 7 7" />
+    </Svg>
+  ),
+  ChevronRight: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="m9 5 7 7-7 7" />
+    </Svg>
+  ),
+  Filter: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="M4 5h16l-6 7.5V19l-4 1.5v-8z" />
+    </Svg>
+  ),
+  Loop: (p: IconProps) => (
+    <Svg {...p}>
+      <path d="M17 2l3 3-3 3" />
+      <path d="M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3" />
+      <path d="M20 13v2a4 4 0 0 1-4 4H4" />
+    </Svg>
+  ),
   Target: (p: IconProps) => (
     <Svg {...p}>
       <circle cx="12" cy="12" r="8" />
@@ -118,5 +182,44 @@ export function Stat({ label, value, sub, testid }: { label: string; value: Reac
       <div className="truncate text-[15px] font-semibold tabular-nums text-slate-100" data-testid={testid}>{value}</div>
       {sub && <div className="text-[11px] text-slate-500">{sub}</div>}
     </div>
+  )
+}
+
+/** A number that counts smoothly to its new value (duration follows the motion setting). */
+export function AnimatedNumber({ value, format = (v) => String(Math.round(v)), duration = 1.1, className, testid }: {
+  value: number
+  format?: (v: number) => string
+  duration?: number
+  className?: string
+  testid?: string
+}) {
+  const [shown, setShown] = useState(value)
+  const from = useRef(value)
+  const shownRef = useRef(value)
+  const motion = useSettings((s) => s.motion)
+  useEffect(() => {
+    const dur = duration * MOTION[motion].ui * 1000
+    if (dur <= 0 || !Number.isFinite(value) || !Number.isFinite(shownRef.current)) {
+      shownRef.current = value
+      setShown(value)
+      return
+    }
+    from.current = shownRef.current
+    const t0 = performance.now()
+    let raf = 0
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - t0) / dur)
+      const v = from.current + (value - from.current) * easeOutCubic(t)
+      shownRef.current = t >= 1 ? value : v
+      setShown(shownRef.current)
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [value, duration, motion])
+  return (
+    <span className={className} data-testid={testid} data-value={value}>
+      {format(shown)}
+    </span>
   )
 }

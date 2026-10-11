@@ -38,7 +38,9 @@ export function FilePanel() {
   const analysisId = useCity((s) => s.analysisId)
   const monthIndex = useCity((s) => s.monthIndex)
   const revealed = useCity((s) => s.revealed)
-  const explorePrediction = usePrediction(mode === 'explore' ? analysisId : null, snapshot?.riskCutoff ?? null)
+  const setMonthIndex = useCity((s) => s.setMonthIndex)
+  const flyToSelected = useCity((s) => s.flyToSelected)
+  const explorePrediction = usePrediction(mode !== 'pvr' ? analysisId : null, snapshot?.riskCutoff ?? null)
   const prediction = mode === 'pvr' ? pvrPrediction : explorePrediction
 
   if (selected == null || !layout || !snapshot || !meta) return null
@@ -52,7 +54,7 @@ export function FilePanel() {
   const currentMonth = meta.months[monthIndex]
 
   return (
-    <aside className="panel pointer-events-auto flex max-h-full w-[360px] flex-col overflow-hidden animate-slide-in" data-testid="file-panel">
+    <aside key={selected} className="panel pointer-events-auto flex max-h-full w-[360px] flex-col overflow-hidden animate-slide-in" data-testid="file-panel">
       <div className="flex items-start gap-3 border-b border-slate-800 p-4">
         <div className="min-w-0 flex-1">
           <div className="truncate text-[12px] text-slate-400" title={path}>{path.slice(0, cut + 1) || './'}</div>
@@ -74,12 +76,27 @@ export function FilePanel() {
             )}
           </div>
         </div>
-        <button onClick={() => select(null)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white" aria-label="Close file panel" data-testid="file-panel-close">
-          <Icon.Close size={16} />
-        </button>
+        <div className="flex shrink-0 items-center gap-0.5">
+          <button onClick={flyToSelected} className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white" aria-label="Fly to file" title="Fly to this file" data-testid="file-panel-fly">
+            <Icon.Recenter size={15} />
+          </button>
+          {detail?.created && mode !== 'pvr' && (
+            <button
+              onClick={() => meta.months.indexOf(detail.created!) >= 0 && setMonthIndex(meta.months.indexOf(detail.created!))}
+              className="rounded-lg px-1.5 py-1 text-[11px] text-slate-400 hover:bg-slate-800 hover:text-white"
+              title="Jump to the month this file was created"
+              data-testid="file-panel-birth"
+            >
+              born {formatMonth(detail.created)}
+            </button>
+          )}
+          <button onClick={() => select(null)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white" aria-label="Close file panel" data-testid="file-panel-close">
+            <Icon.Close size={16} />
+          </button>
+        </div>
       </div>
 
-      <div className="scroll-thin flex-1 overflow-y-auto p-4">
+      <div className="scroll-thin stagger flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-3 gap-x-3 gap-y-3">
           <Stat label="LOC" value={formatNumber(snapshot.loc[selected])} />
           <Stat label="Complexity" value={formatNumber(snapshot.ccn[selected])} />

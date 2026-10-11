@@ -63,7 +63,7 @@ export function BenchView({ n }: { n: number }) {
   }, [layout, meta])
   return (
     <div className="relative h-full" data-testid="bench">
-      <CityScene layout={layout} meta={meta} snapshot={snaps[k]} />
+      <CityScene layout={layout} meta={meta} snapshot={snaps[k]} bench />
       <div className="panel absolute left-3 top-3 px-3 py-2 text-[13px]">{n} buildings</div>
     </div>
   )

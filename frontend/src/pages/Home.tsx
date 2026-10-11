@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { api, ApiError, type DemoRepo } from '../api'
+import { api, ApiError, type DemoRepo, type JobSummary } from '../api'
 import { formatMonth, formatNumber, isValidRepoUrl } from '../data/transforms'
 import { navigate } from '../router'
 import { Icon, Logo, Skeleton, Spinner } from '../ui'
@@ -12,9 +12,11 @@ export function Home() {
   const [url, setUrl] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [recent, setRecent] = useState<JobSummary[]>([])
 
   useEffect(() => {
     api.demos().then(setDemos).catch((e) => setDemoError(e instanceof Error ? e.message : String(e)))
+    api.list().then((all) => setRecent(all.filter((j) => !j.demo))).catch(() => undefined)
   }, [])
 
   async function submit(e: FormEvent) {
@@ -36,7 +38,7 @@ export function Home() {
   }
 
   return (
-    <div className="relative h-full overflow-y-auto scroll-thin">
+    <div className="page relative h-full overflow-y-auto scroll-thin">
       <HeroBackdrop />
       <div className="relative mx-auto flex max-w-5xl flex-col px-8 pb-16 pt-14">
         <header className="flex items-center gap-3">
@@ -44,22 +46,22 @@ export function Home() {
           <span className="text-xl font-semibold tracking-tight">RepoCity</span>
         </header>
 
-        <section className="mt-16 max-w-3xl animate-fade-in">
-          <h1 className="text-[44px] font-semibold leading-[1.08] tracking-tight text-white">
+        <section className="stagger mt-16 max-w-3xl">
+          <h1 className="text-[44px] font-semibold leading-[1.08] tracking-tight text-white" style={{ ['--i' as string]: 1 }}>
             Every repository is a city.
             <br />
             <span className="bg-gradient-to-r from-emerald-300 via-amber-300 to-rose-400 bg-clip-text text-transparent">
               See where the bugs will be.
             </span>
           </h1>
-          <p className="mt-5 max-w-2xl text-[16px] leading-relaxed text-slate-300">
+          <p className="mt-5 max-w-2xl text-[16px] leading-relaxed text-slate-300" style={{ ['--i' as string]: 3 }}>
             Files become buildings and directories become districts. Replay the whole history, then ask a model trained
             only on the past which files will need bug fixes in the next six months, and check its answer against what
             actually happened.
           </p>
         </section>
 
-        <form onSubmit={submit} className="panel mt-10 max-w-3xl p-2" aria-label="Analyse a repository">
+        <form onSubmit={submit} className="panel mt-10 max-w-3xl p-2 animate-rise focus-within:border-sky-400/50 focus-within:shadow-[0_0_0_4px_rgb(56_189_248/0.10)]" style={{ animationDelay: 'calc(var(--motion) * 320ms)' }} aria-label="Analyse a repository">
           <div className="flex items-center gap-2">
             <div className="flex flex-1 items-center gap-2 px-3 text-slate-400">
               <Icon.City size={18} />
@@ -107,7 +109,7 @@ export function Home() {
           <div className="flex items-baseline justify-between">
             <h2 className="panel-title">Pre-analysed demo cities (work offline)</h2>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-4">
+          <div className="stagger mt-4 grid grid-cols-3 gap-4">
             {demos === null && !demoError &&
               [0, 1, 2].map((i) => (
                 <div key={i} className="panel p-5">
@@ -126,11 +128,12 @@ export function Home() {
                 No demo cities found in <code className="font-mono">demo/cache</code>. Paste a URL above to analyse a repository.
               </div>
             )}
-            {demos?.map((d) => (
+            {demos?.map((d, i) => (
               <button
                 key={d.id}
+                style={{ ['--i' as string]: i + 4 }}
                 onClick={() => navigate({ page: 'city', id: d.id })}
-                className="panel group p-5 text-left transition hover:-translate-y-0.5 hover:border-sky-400/40"
+                className="panel group p-5 text-left hover:-translate-y-1 hover:border-sky-400/40 hover:shadow-[0_18px_40px_-18px_rgb(56_189_248/0.35)]"
                 data-testid={`demo-${d.id}`}
               >
                 <div className="flex items-center justify-between">
@@ -154,6 +157,8 @@ export function Home() {
             ))}
           </div>
         </section>
+
+        {recent.length > 0 && <RecentAnalyses jobs={recent} />}
 
         <section className="mt-14 grid grid-cols-3 gap-6 text-[13.5px] leading-relaxed text-slate-400">
           <Explainer title="Buildings = files">
@@ -197,5 +202,30 @@ function HeroBackdrop() {
       </svg>
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-900 to-transparent" />
     </div>
+  )
+}
+
+function RecentAnalyses({ jobs }: { jobs: JobSummary[] }) {
+  return (
+    <section className="mt-12 animate-fade-in" data-testid="recent-analyses">
+      <h2 className="panel-title">Your analyses on this server</h2>
+      <ul className="mt-3 divide-y divide-slate-800/80 overflow-hidden rounded-xl border border-slate-800/80">
+        {jobs.slice(0, 8).map((j) => (
+          <li key={j.id}>
+            <button
+              onClick={() => navigate(j.status === 'done' ? { page: 'city', id: j.id } : { page: 'analyze', id: j.id })}
+              className="flex w-full items-center gap-4 bg-ink-850/60 px-4 py-2.5 text-left hover:bg-slate-800/70"
+            >
+              <span className={`h-2 w-2 shrink-0 rounded-full ${j.status === 'done' ? 'bg-emerald-400' : j.status === 'error' ? 'bg-rose-400' : 'animate-pulse bg-sky-400'}`} />
+              <span className="min-w-0 flex-1 truncate text-[13.5px] font-medium text-slate-100">{j.name}</span>
+              <span className="text-[12px] text-slate-500">
+                {j.status === 'done' && j.nCommits != null ? `${formatNumber(j.nCommits)} commits · ${formatNumber(j.nFiles ?? 0)} files` : j.status === 'error' ? (j.error ?? 'failed') : `${Math.round(j.progress * 100)}%`}
+              </span>
+              <span className="text-[12px] text-sky-300/80">{j.status === 'done' ? 'Open →' : j.status === 'error' ? '' : 'Progress →'}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }

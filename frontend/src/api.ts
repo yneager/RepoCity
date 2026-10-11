@@ -57,22 +57,32 @@ export interface MonthStats {
   loc: number
   commits: number
   fixes: number
+  /** bug-fix commits in this month (absent in old bundles) */
+  fixesMonth?: number
+  commitsMonth?: number
+  /** SZZ bug-introducing commits dated in this month */
+  born?: number
 }
+
+/** Numeric per-building column; typed arrays at runtime (see store.ts), plain arrays in tests. */
+export type Column = ArrayLike<number>
 
 export interface Snapshot {
   month: string
   riskCutoff: string | null
-  loc: number[]
-  ccn: number[]
-  churn: number[]
-  commits: number[]
-  authors: number[]
-  age: number[]
-  fixes: number[]
-  bornTotal: number[]
-  born: number[]
-  risk: number[]
+  loc: Column
+  ccn: Column
+  churn: Column
+  commits: Column
+  authors: Column
+  age: Column
+  fixes: Column
+  bornTotal: Column
+  born: Column
+  risk: Column
 }
+
+export const SNAPSHOT_COLUMNS = ['loc', 'ccn', 'churn', 'commits', 'authors', 'age', 'fixes', 'bornTotal', 'born', 'risk'] as const
 
 export type MetricSet = Record<
   'roc_auc' | 'pr_auc' | 'recall_20loc' | 'popt' | 'p_at_10' | 'p_at_20' | 'recall_20loc_ea' | 'popt_ea',
@@ -97,6 +107,8 @@ export interface Prediction {
   shap: [string, number | null, number | null][][] | null
   rankModel: number[]
   rankHotspot: number[]
+  rankModelEa?: number[]
+  rankHotspotEa?: number[]
   metrics: Record<string, MetricSet>
   fixcacheHitRate: number | null
 }
@@ -149,7 +161,14 @@ export interface JobSummary {
   error: string | null
   warnings: string[]
   progress: number
+  step?: string
   demo: boolean
+  created?: number
+  queuePosition?: number
+  nCommits?: number
+  nFiles?: number
+  firstMonth?: string
+  lastMonth?: string
   meta?: Meta
 }
 
@@ -194,6 +213,12 @@ export const api = {
   health: () => get<{ status: string }>('/api/health'),
   demos: () => get<DemoRepo[]>('/api/demo'),
   status: (id: string) => get<JobSummary>(base(id)),
+  list: () => get<JobSummary[]>('/api/analyses'),
+  async cancel(id: string): Promise<JobSummary> {
+    const res = await fetch(`${base(id)}/cancel`, { method: 'POST' })
+    if (!res.ok) throw new ApiError(res.status, await errorText(res))
+    return res.json()
+  },
   meta: (id: string) => get<Meta>(`${base(id)}/meta`),
   layout: (id: string) => get<Layout>(`${base(id)}/layout`),
   snapshotIndex: (id: string) => get<MonthStats[]>(`${base(id)}/snapshots`),

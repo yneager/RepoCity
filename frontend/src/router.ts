@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 export type Route = { page: 'home' } | { page: 'analyze'; id: string } | { page: 'city'; id: string }
 
 export function parseHash(hash: string): Route {
-  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent)
+  const parts = hash.replace(/^#\/?/, '').split('?')[0].split('/').filter(Boolean).map(decodeURIComponent)
   if (parts[0] === 'city' && parts[1]) return { page: 'city', id: parts[1] }
   if (parts[0] === 'analyze' && parts[1]) return { page: 'analyze', id: parts[1] }
   return { page: 'home' }
