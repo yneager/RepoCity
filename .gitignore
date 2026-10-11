@@ -8,7 +8,7 @@ __pycache__/
 .hypothesis/
 
 # Analysis data: clones, DuckDB stores, user analyses (never commit)
-data/
+/data/
 *.duckdb
 *.duckdb.wal
 
