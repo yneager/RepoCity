@@ -83,15 +83,31 @@ def create_app(manager: JobManager | None = None) -> FastAPI:
 
     @app.get("/api/analyses")
     def list_analyses() -> list[dict]:
-        return [j.summary() for j in jobs.jobs.values()]
+        """All analyses (newest first), including the name and size of finished ones."""
+        out = []
+        for j in sorted(jobs.jobs.values(), key=lambda j: -j.created):
+            item = j.summary()
+            if j.meta:
+                item.update({"nCommits": j.meta["nCommits"], "nFiles": j.meta["nFiles"],
+                             "firstMonth": j.meta["months"][0], "lastMonth": j.meta["months"][-1]})
+            out.append(item)
+        return out
 
     @app.get("/api/analyses/{analysis_id}")
     def status(analysis_id: str) -> dict:
         job = job_or_404(analysis_id)
         out = job.summary()
+        out["queuePosition"] = jobs.queue_position(job)
         if job.status == "done" and job.bundle:
-            out["meta"] = read_json(job.bundle / "meta.json.gz")
+            out["meta"] = job.meta or read_json(job.bundle / "meta.json.gz")
         return out
+
+    @app.post("/api/analyses/{analysis_id}/cancel")
+    def cancel(analysis_id: str) -> dict:
+        job = jobs.cancel(analysis_id)
+        if job is None:
+            raise HTTPException(404, "Unknown analysis id")
+        return job.summary()
 
     @app.get("/api/analyses/{analysis_id}/events")
     async def events(analysis_id: str, request: Request) -> StreamingResponse:
@@ -162,7 +178,8 @@ def create_app(manager: JobManager | None = None) -> FastAPI:
         f = files.get(str(file_id))
         if f is None:
             raise HTTPException(404, "Unknown file id")
-        meta = read_json(bundle_of(analysis_id) / "meta.json.gz")
+        job = job_or_404(analysis_id)
+        meta = job.meta or read_json(bundle_of(analysis_id) / "meta.json.gz")
         rows = commits["rows"]  # [hash, time, initials, author, fix, subject, merge]
 
         def commit_info(idx: int) -> dict:

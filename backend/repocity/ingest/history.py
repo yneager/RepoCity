@@ -81,6 +81,7 @@ def is_source_file(path: str | None, extensions: Iterable[str] = config.SOURCE_E
     return not any(part.lower() in config.EXCLUDED_DIRS for part in p.parts[:-1])
 
 
+REGULAR_MODES = frozenset({"100644", "100755", "100664"})
 _RAW_RE = re.compile(r"^:(\d+) (\d+) ([0-9a-f]+) ([0-9a-f]+) ([A-Z])(\d*)$")
 
 
@@ -101,17 +102,34 @@ def _parse_changes(block: str) -> list[FileChange]:
             m = _RAW_RE.match(parts[0])
             if not m:
                 continue
+            # Only regular files count; symlinks (120000) and submodules (160000) are not
+            # source code. Skipped entries keep their slot so the numstat zip stays aligned.
+            old_ok, new_ok = m.group(1) in REGULAR_MODES, m.group(2) in REGULAR_MODES
             status = m.group(5)
             paths = [unquote_path(x) for x in parts[1:]]
             if status in ("R", "C") and len(paths) >= 2:
                 old, new = paths[0], paths[1]
-                raws.append(("R" if status == "R" else "A", old if status == "R" else None, new))
+                if new_ok and old_ok:
+                    raws.append(("R" if status == "R" else "A", old if status == "R" else None, new))
+                elif new_ok:
+                    raws.append(("A", None, new))
+                elif old_ok and status == "R":
+                    raws.append(("D", old, None))
+                else:
+                    raws.append(("SKIP", None, None))
             elif status == "A":
-                raws.append(("A", None, paths[0]))
+                raws.append(("A", None, paths[0]) if new_ok else ("SKIP", None, None))
             elif status == "D":
-                raws.append(("D", paths[0], None))
+                raws.append(("D", paths[0], None) if old_ok else ("SKIP", None, None))
             else:  # M, T (type change), U ...
-                raws.append(("M", paths[0], paths[0]))
+                if old_ok and new_ok:
+                    raws.append(("M", paths[0], paths[0]))
+                elif old_ok:
+                    raws.append(("D", paths[0], None))  # regular file became a symlink/submodule
+                elif new_ok:
+                    raws.append(("A", None, paths[0]))
+                else:
+                    raws.append(("SKIP", None, None))
         else:
             parts = line.split("\t", 2)
             if len(parts) == 3:
@@ -119,6 +137,8 @@ def _parse_changes(block: str) -> list[FileChange]:
                 stats.append((int(a) if a.isdigit() else 0, int(d) if d.isdigit() else 0))
     changes = []
     for i, (status, old, new) in enumerate(raws):
+        if status == "SKIP":
+            continue
         added, deleted = stats[i] if i < len(stats) else (0, 0)
         changes.append(FileChange(status, old, new, added, deleted))
     return changes
@@ -266,7 +286,7 @@ def list_tree(repo: str | Path, commit: str) -> dict[str, str]:
             continue
         meta, _, path = line.partition("\t")
         parts = meta.split()
-        if len(parts) == 3 and parts[1] == "blob":
+        if len(parts) == 3 and parts[1] == "blob" and parts[0] in REGULAR_MODES:
             path = unquote_path(path)
             if is_source_file(path):
                 result[path] = parts[2]

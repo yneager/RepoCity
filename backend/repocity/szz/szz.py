@@ -226,10 +226,14 @@ def szz_links(
 
     Returns columns: fix_idx, fix_time, file_id, intro_hash, intro_time.
     """
+    cols = ["fix_idx", "fix_time", "file_id", "intro_hash", "intro_time"]
+    empty = pd.DataFrame({c: pd.Series(dtype="int64" if c != "intro_hash" else "object") for c in cols})
+    if lines.empty:
+        return empty
     mode = "w" if cfg.ignore_whitespace_comments else "plain"
-    df = lines[lines["mode"] == mode]
+    df = lines[(lines["mode"] == mode).to_numpy(dtype=bool)]
     if cfg.ignore_whitespace_comments:
-        df = df[~df["noise"]]
+        df = df[~df["noise"].to_numpy(dtype=bool)]
     fix_info = commits.set_index("idx")[["hash", "time", "n_files_all"]]
     df = df.join(fix_info, on="fix_idx")
     if cfg.ignore_large_commits:
@@ -240,6 +244,8 @@ def szz_links(
         limit = df["hash"].map(issue_dates)
         df = df[limit.isna() | (df["intro_time"] <= limit)]
     df = df[df["intro_hash"] != df["hash"]]
+    if df.empty:
+        return empty
     out = (
         df.groupby(["fix_idx", "file_id", "intro_hash"], as_index=False)
         .agg(fix_time=("time", "first"), intro_time=("intro_time", "first"))

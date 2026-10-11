@@ -10,6 +10,7 @@ pre-analysed demo bundles in ``demo/cache``.
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -54,6 +55,9 @@ class Job:
     warnings: list[str] = field(default_factory=list)
     created: float = field(default_factory=time.time)
     demo: bool = False
+    meta: dict | None = None  # cached bundle meta (demo list, status)
+    cancelled: bool = False
+    proc: subprocess.Popen | None = field(default=None, repr=False)
     lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def emit(self, step: str, step_progress: float, message: str, kind: str = "progress") -> None:
@@ -61,6 +65,8 @@ class Job:
         overall = done_before + STEP_WEIGHTS.get(step, 0.0) * max(0.0, min(1.0, step_progress))
         if kind == "done":
             overall = 1.0
+        elif kind in ("error", "warning") and self.events:
+            overall = self.events[-1]["progress"]  # failures and warnings never move the bar backwards
         with self.lock:
             self.events.append(
                 {
@@ -84,7 +90,9 @@ class Job:
             "error": self.error,
             "warnings": self.warnings,
             "progress": last["progress"] if last else 0.0,
+            "step": last["step"] if last else "clone",
             "demo": self.demo,
+            "created": self.created,
         }
 
 
@@ -107,7 +115,8 @@ class JobManager:
                 meta_path = bundle / "meta.json.gz"
                 if meta_path.exists() and ID_RE.match(d.name):
                     meta = read_json(meta_path)
-                    job = Job(d.name, meta.get("url"), meta.get("name", d.name), status="done", bundle=bundle, demo=demo)
+                    job = Job(d.name, meta.get("url"), meta.get("name", d.name), status="done", bundle=bundle, demo=demo,
+                              meta=meta, created=meta.get("analysedAt", time.time()))
                     job.emit("layout", 1.0, "Loaded from cache", kind="done")
                     self.jobs.setdefault(d.name, job)
 
@@ -115,7 +124,7 @@ class JobManager:
         out = []
         for job in self.jobs.values():
             if job.demo and job.bundle:
-                m = read_json(job.bundle / "meta.json.gz")
+                m = job.meta or read_json(job.bundle / "meta.json.gz")
                 out.append(
                     {
                         "id": job.id,
@@ -151,21 +160,50 @@ class JobManager:
         threading.Thread(target=self._run, args=(job, head), daemon=True).start()
         return job
 
+    def queue_position(self, job: Job) -> int:
+        """Number of analyses that must finish before ``job`` starts (0 = running or next)."""
+        waiting = sorted((j for j in self.jobs.values() if j.status in ("queued", "running")), key=lambda j: j.created)
+        return max(0, [j.id for j in waiting].index(job.id)) if job in waiting else 0
+
+    def cancel(self, job_id: str) -> Job | None:
+        job = self.get(job_id)
+        if job is None or job.status not in ("queued", "running"):
+            return job
+        job.cancelled = True
+        proc = job.proc
+        if proc is not None and proc.poll() is None:
+            if os.name == "nt":  # kill the worker and its metric-pool children
+                subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)], capture_output=True, check=False)
+            else:
+                proc.kill()
+        return job
+
     def _run(self, job: Job, head: str) -> None:
-        job.emit("clone", 0.0, "Queued")
+        ahead = self.queue_position(job)
+        job.emit("clone", 0.0, f"Queued ({ahead} analysis ahead)" if ahead == 1 else f"Queued ({ahead} analyses ahead)" if ahead else "Starting")
         with self._run_lock:
+            if job.cancelled:
+                job.status = "error"
+                job.error = "Cancelled"
+                job.emit("clone", 0.0, "Cancelled before it started", kind="error")
+                return
             job.status = "running"
             work = self.data_dir / "analyses" / job.id
             clone_dir = self.data_dir / "clones" / job.id
             try:
                 self._analyse(job, head, work, clone_dir)
                 job.status = "done"
+                job.meta = read_json(job.bundle / "meta.json.gz") if job.bundle else None
                 job.emit("layout", 1.0, "Analysis complete", kind="done")
             except Exception as exc:  # report every failure to the client
                 job.status = "error"
-                job.error = str(exc) if isinstance(exc, (GitError, ValueError, RuntimeError)) else f"{type(exc).__name__}: {exc}"
-                job.emit("clone", 0.0, job.error, kind="error")
-                traceback.print_exc()
+                if job.cancelled:
+                    job.error = "Cancelled"
+                else:
+                    job.error = str(exc) if isinstance(exc, (GitError, ValueError, RuntimeError)) else f"{type(exc).__name__}: {exc}"
+                    traceback.print_exc()
+                last_step = job.events[-1]["step"] if job.events else "clone"
+                job.emit(last_step, 0.0, job.error, kind="error")
             finally:
                 rmtree_force(clone_dir)
 
@@ -186,11 +224,14 @@ class JobManager:
         # The heavy part runs in a worker process (see repocity/pipeline/worker.py).
         args = {"url": job.url, "head": head, "id": job.id, "name": job.name, "work": str(work),
                 "clone_dir": str(clone_dir), "warnings": job.warnings}
+        if job.cancelled:
+            raise RuntimeError("Cancelled")
         proc = subprocess.Popen(
             [sys.executable, "-m", "repocity.pipeline.worker", json.dumps(args)],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace",
             cwd=str(Path(__file__).resolve().parents[2]),
         )
+        job.proc = proc
         bundle = None
         fatal = None
         assert proc.stdout is not None

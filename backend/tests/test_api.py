@@ -120,3 +120,25 @@ def test_submit_runs_background_analysis(bug_repo, tmp_path, monkeypatch):
         again = c.post("/api/analyses", json={"url": "https://github.com/example/other"}).json()
         assert again["id"] == aid and again["status"] == "done"
         assert c.get(f"/api/analyses/{aid}/layout").status_code == 200
+
+
+def test_cancel_analysis(bug_repo, tmp_path, monkeypatch):
+    head = bug_repo.hashes["c13"]
+    monkeypatch.setattr(jobs_mod, "remote_head", lambda url: head)
+
+    def slow_clone(url, dest, timeout, rev=None):
+        time.sleep(1.5)
+        shutil.copytree(bug_repo.path, dest)
+
+    monkeypatch.setattr(jobs_mod, "clone", slow_clone)
+    app = create_app(JobManager(data_dir=tmp_path / "data", demo_dir=tmp_path / "nodemo"))
+    with TestClient(app) as c:
+        aid = c.post("/api/analyses", json={"url": "https://github.com/example/cancel-me"}).json()["id"]
+        assert c.get(f"/api/analyses/{aid}").json()["queuePosition"] == 0
+        assert c.post(f"/api/analyses/{aid}/cancel").status_code == 200
+        deadline = time.time() + 30
+        while time.time() < deadline and c.get(f"/api/analyses/{aid}").json()["status"] != "error":
+            time.sleep(0.2)
+        st = c.get(f"/api/analyses/{aid}").json()
+        assert st["status"] == "error" and st["error"] == "Cancelled"
+        assert c.post("/api/analyses/nope/cancel").status_code == 404

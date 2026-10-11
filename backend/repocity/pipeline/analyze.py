@@ -67,6 +67,11 @@ def ingest(
             workers=cfg.workers,
             progress=lambda f, m: progress("history" if f < 0.5 else "snapshots", f * 2 if f < 0.5 else (f - 0.5) * 2, m),
         )
+    if h.snapshot_files.empty:
+        from repocity import config as _cfg
+
+        exts = ", ".join(sorted(_cfg.SOURCE_EXTENSIONS)[:12])
+        raise ValueError(f"No source files found in this repository (supported extensions include {exts}, ...)")
     with t.run("bugfix"):
         progress("szz", 0.0, "Classifying bug-fix commits")
         mainline = list(h.commits["hash"])

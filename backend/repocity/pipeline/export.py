@@ -135,6 +135,9 @@ def export_bundle(
         order_model = rank_order(risk, predictor.cfg.seed)
         hotspot = p.scores["hotspot"]
         order_hotspot = rank_order(hotspot, predictor.cfg.seed)
+        loc_t = np.maximum(p.feats["loc"].to_numpy(float), 1.0)
+        order_model_ea = rank_order(risk / loc_t, predictor.cfg.seed)
+        order_hotspot_ea = rank_order(hotspot / loc_t, predictor.cfg.seed)
         payload = {
             "cutoff": m,
             "horizonEnd": add_months(m, predictor.cfg.horizon_months),
@@ -151,8 +154,11 @@ def export_bundle(
             "hotspot": [_clean(v) for v in hotspot],
             "actual": [int(v) for v in p.labels.to_numpy()] if p.labels is not None else None,
             "shap": [[[f, _clean(v, 2), _clean(s)] for f, v, s in row] for row in p.shap] if p.shap else None,
-            "rankModel": [int(i) for i in order_model[:200]],
-            "rankHotspot": [int(i) for i in order_hotspot[:200]],
+            # complete orderings (incl. seeded tie-breaking) so the UI can redraw the evaluation curves
+            "rankModel": [int(i) for i in order_model],
+            "rankHotspot": [int(i) for i in order_hotspot],
+            "rankModelEa": [int(i) for i in order_model_ea],
+            "rankHotspotEa": [int(i) for i in order_hotspot_ea],
             "metrics": {k: {mk: _clean(mv) for mk, mv in v.items()} for k, v in p.metrics.items()},
             "fixcacheHitRate": _clean(p.fixcache_hit_rate),
         }
@@ -236,13 +242,17 @@ def export_bundle(
         for key in maxima:
             maxima[key] = max(maxima[key], max(payload[key], default=0))
         n_commits_so_far = int(np.searchsorted(commits["time"].to_numpy(), end, side="right"))
+        fixes_so_far = int(commits["is_bugfix"].to_numpy()[:n_commits_so_far].sum())
         month_index.append(
             {
                 "month": m,
                 "files": int(exists.sum()),
                 "loc": int(loc.sum()),
                 "commits": n_commits_so_far,
-                "fixes": int(commits["is_bugfix"].to_numpy()[:n_commits_so_far].sum()),
+                "fixes": fixes_so_far,
+                "fixesMonth": fixes_so_far - (month_index[-1]["fixes"] if month_index else 0),
+                "commitsMonth": n_commits_so_far - (month_index[-1]["commits"] if month_index else 0),
+                "born": int(born.sum()),
             }
         )
     write_json(out / "snapshots" / "index.json.gz", month_index)
