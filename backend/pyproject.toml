@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repocity"
+version = "1.0.0"
+description = "RepoCity: git history as a 3D city with file-level bug-risk prediction"
+requires-python = ">=3.12"
+# Exact pins live in requirements.txt / requirements-dev.txt (reproducibility).
+dependencies = []
+
+[tool.setuptools.packages.find]
+include = ["repocity*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 600
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning", "ignore:.*httpx.*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501", "B008", "B905"]
