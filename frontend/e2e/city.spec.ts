@@ -26,6 +26,11 @@ async function openDemo(page: Page) {
   await settle(page)
 }
 
+// animated numbers expose their target value in data-value (the text may still be counting up)
+async function valueOf(page: Page, testid: string) {
+  return Number(await page.getByTestId(testid).getAttribute('data-value'))
+}
+
 async function buildingScreenPos(page: Page) {
   return page.evaluate(() => {
     const api = window.__repocity!
@@ -47,7 +52,7 @@ test('demo city: timeline, picking, search, encodings', async ({ page }) => {
   const filesAt = async (idx: number) => {
     await slider.fill(String(idx))
     await settle(page, 2200)
-    return Number(await page.getByTestId('stat-files').textContent())
+    return valueOf(page, 'stat-files')
   }
   const early = await filesAt(Math.round(max * 0.1))
   await expect(page.getByTestId('timeline-date')).not.toHaveText('')
@@ -117,10 +122,10 @@ test('prediction vs reality: reveal and score card match the backend', async ({ 
   await shot(page, '11-pvr-revealed')
 
   // the numbers shown must be the backend's evaluation numbers
-  const id = decodeURIComponent(new URL(page.url()).hash.split('/')[2])
+  const id = decodeURIComponent(new URL(page.url()).hash.split('?')[0].split('/')[2])
   const pred = await (await request.get(`/api/analyses/${id}/predictions?cutoff=${cutoff}`)).json()
   const k = 20
-  const hits = Number(await page.getByTestId('hits-value').textContent())
+  const hits = await valueOf(page, 'hits-value')
   expect(hits).toBeCloseTo(pred.metrics[pred.model].p_at_20 * k, 6)
   const recall = (await page.getByTestId('card-model-recall').textContent())!.replace('%', '')
   expect(Number(recall)).toBe(Math.round(pred.metrics[pred.model].recall_20loc * 100))
@@ -129,7 +134,8 @@ test('prediction vs reality: reveal and score card match the backend', async ({ 
 
   // k = 10 uses the same ranking -> equals backend precision@10
   await page.getByTestId('pvr-k-10').click()
-  const hits10 = Number(await page.getByTestId('hits-value').textContent())
+  await expect(page.getByTestId('hits-value')).toHaveAttribute('data-value', String(Math.round(pred.metrics[pred.model].p_at_10 * 10)))
+  const hits10 = await valueOf(page, 'hits-value')
   expect(hits10).toBeCloseTo(pred.metrics[pred.model].p_at_10 * 10, 6)
 
   // the "evaluation cutoff" list matches the backend's E1 cutoffs
